@@ -8,13 +8,13 @@
     "start": "react-native start",
     "pod-ios": "cd ios; pod install; cd ..; react-native run-ios ",
     "test": "jest",
-    "install": "npm install --force",
     "lint": "eslint ."
   },
   "dependencies": {
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-elements": "^3.1.0",
+    "react-native-neomorph-shadows": "^1.1.2",
     "react-native-vector-icons": "^8.0.0"
   },
   "devDependencies": {
