@@ -8,7 +8,7 @@ import {COLORS} from '../../../constants';
 import {Shadow} from 'react-native-neomorph-shadows';
 import {styles} from './styles';
 
-export default function SignUpScreen({navigation}) {
+export default function SignUp({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [college, setCollege] = useState('uk')
@@ -93,10 +93,73 @@ export default function SignUpScreen({navigation}) {
                             value: 'wartburg college',
                         },
                         {
-                            label: 'Luther College',
-                            value: 'luther college',
+                            label: 'UK',
+                            value: 'uk',
                         },
-
+                        {
+                            label: 'France',
+                            value: 'france',
+                        },
+                        {
+                            label: 'Wartburg College',
+                            value: 'wartburg college',
+                        },
+                        {
+                            label: 'UK',
+                            value: 'uk',
+                        },
+                        {
+                            label: 'France',
+                            value: 'france',
+                        },
+                        {
+                            label: 'Wartburg College',
+                            value: 'wartburg college',
+                        },
+                        {
+                            label: 'UK',
+                            value: 'uk',
+                        },
+                        {
+                            label: 'France',
+                            value: 'france',
+                        },
+                        {
+                            label: 'Wartburg College',
+                            value: 'wartburg college',
+                        },
+                        {
+                            label: 'UK',
+                            value: 'uk',
+                        },
+                        {
+                            label: 'France',
+                            value: 'france',
+                        },
+                        {
+                            label: 'Wartburg College',
+                            value: 'wartburg college',
+                        },
+                        {
+                            label: 'UK',
+                            value: 'uk',
+                        },
+                        {
+                            label: 'France',
+                            value: 'france',
+                        },
+                        {
+                            label: 'Wartburg College',
+                            value: 'wartburg college',
+                        },
+                        {
+                            label: 'UK',
+                            value: 'uk',
+                        },
+                        {
+                            label: 'France',
+                            value: 'france',
+                        },
 
                     ]}
                     defaultValue={college}
