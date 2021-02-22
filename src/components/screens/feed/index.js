@@ -81,20 +81,20 @@ export default function Feed({navigation}) {
             })
     }
 
-    function addItem() {
-        database().ref(`${userData['college']}/Items/${userData['uid']}${date.toTimeString()}`)
-            .set({
-                name: "GBBP",
-                price: "$15",
-                brand:"",
-                description: "The God of of the Bible and the God of philosophers\n Used it for 1 semester",
-                condition: "Used",
-                category: "Textbooks",
-                payment_method: "Cash App",
-                img_url: "https://firebasestorage.googleapis.com/v0/b/flash-chat-ios-13-7845d.appspot.com/o/images%2Fitems%2F9.png?alt=media&token=540828ab-657a-45af-ab06-05db9337dd1c",
-                uid: "joYpScOIycN7cUSLoWYVzQZguv82"
-            })
-    }
+    // function addItem() {
+    //     database().ref(`${userData['college']}/Items/${userData['uid']}${date.toTimeString()}`)
+    //         .set({
+    //             name: "GBBP",
+    //             price: "$15",
+    //             brand:"",
+    //             description: "The God of of the Bible and the God of philosophers\n Used it for 1 semester",
+    //             condition: "Used",
+    //             category: "Textbooks",
+    //             payment_method: "Cash App",
+    //             img_url: "https://firebasestorage.googleapis.com/v0/b/flash-chat-ios-13-7845d.appspot.com/o/images%2Fitems%2F9.png?alt=media&token=540828ab-657a-45af-ab06-05db9337dd1c",
+    //             uid: "joYpScOIycN7cUSLoWYVzQZguv82"
+    //         })
+    // }
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, (w) =>
