@@ -66,6 +66,38 @@ export const styles = StyleSheet.create({
     seeAll:{
         color: COLORS.blue,
         fontWeight:'500'
+    },
+    itemNameIS:{
+        fontWeight:'700',
+        fontSize:24
+    },
+    postDate:{
+        fontSize:16,
+        color:COLORS.gray
+    },
+    price:{
+        fontWeight:'700',
+        fontSize:20,
+        paddingVertical:2
+    },
+    category:{
+        fontWeight:'500',
+        fontSize:16,
+        paddingRight:10,
+        paddingVertical: 10
+    },
+    buyButton:{
+        borderRadius:20,
+    },
+    profileImage:{
+        width:100,
+        height:100,
+        borderRadius:50,
+        borderWidth:2,
+        borderColor: COLORS.orange
+    },
+    userName:{
+        fontSize:18,
+        fontWeight:'500'
     }
-
 })

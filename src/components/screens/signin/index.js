@@ -1,7 +1,6 @@
 import React, {useContext, useState} from 'react';
-// import {AuthContext} from "../../../navigation/AuthProvider";
+import {AuthContext} from "../../../navigation/AuthProvider";
 import {
-  Image,
   SafeAreaView,
   StatusBar,
   Text,
@@ -10,29 +9,25 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Input} from 'react-native-elements';
-// import GoogleSignIn from "./googleSignIn";
 import {styles} from './styles';
 import {COLORS} from '../../../constants';
 import {Shadow} from 'react-native-neomorph-shadows';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export default function SignIn({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const {login} = useContext(AuthContext)
-  // const {googleLogin} = useContext(AuthContext)
+  const {login} = useContext(AuthContext)
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} />
       <SafeAreaView>
         <View style={styles.logo}>
-          <MaterialIcon
-            name={'emoji-people'}
+          <MaterialCommunityIcons
+            name={'music-note-whole-dotted'}
             size={170}
             style={{color: COLORS.blue}}
           />
-          {/*<Image source={require('../../../assets/images/frozen_hills.jpg')}*/}
-          {/*       style={{alignSelf: "center", height: '100%', width: '100%'}}/>*/}
         </View>
         <View style={styles.inputContainer}>
           <Input
@@ -89,11 +84,6 @@ export default function SignIn({navigation}) {
             </Shadow>
           </TouchableOpacity>
         </View>
-
-        <Text
-          style={{alignSelf: 'center', fontWeight: 'bold', marginVertical: 30}}>
-          Or Connect Using
-        </Text>
 
         <View style={{flex: 1, justifyContent: 'flex-end'}}>
           <View style={{flexDirection: 'row', alignSelf: 'center'}}>

@@ -1,19 +1,24 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
-import {SafeAreaView, StatusBar, TouchableOpacity, View, StyleSheet} from 'react-native';
+import {SafeAreaView, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Input, Text} from 'react-native-elements';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-// import {AuthContext} from '../../../navigation/AuthProvider';
+import database from '@react-native-firebase/database'
+import {AuthContext} from '../../../navigation/AuthProvider';
 import {COLORS} from '../../../constants';
 import {Shadow} from 'react-native-neomorph-shadows';
 import {styles} from './styles';
+import {universities} from "./uniData";
 
 export default function SignUp({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [college, setCollege] = useState('uk')
-    // const {register} = useContext(AuthContext);
+    const [name, setName] = useState('')
+    const {register} = useContext(AuthContext);
     const [passColor, setPassColor] = useState(COLORS.blue);
+
+
 
     return (
         <View style={styles.container}>
@@ -28,7 +33,26 @@ export default function SignUp({navigation}) {
                     }}>
                     Let's Get Started!
                 </Text>
-                <Text style={{color: COLORS.black}}>Create an account</Text>
+                <Text style={{color: COLORS.black, padding: 10}}>Create an account</Text>
+
+                <View style={styles.inputContainer}>
+                    <Input
+                        placeholder={'Full Name'}
+                        inputStyle={{color: COLORS.black, fontSize: 14}}
+                        placeholderTextColor="rgba(0,0,0,0.7)"
+                        autoCorrect={false}
+                        onChangeText={(userName) => setName(userName)}
+                        autoCapitalize={"words"}
+                        autoCompleteType={'name'}
+                        leftIcon={
+                            <Ionicons
+                                name={'person'}
+                                size={25}
+                                style={{right: 5, color: COLORS.blue}}
+                            />
+                        }
+                    />
+                </View>
 
                 <View style={styles.inputContainer}>
                     <Input
@@ -87,83 +111,10 @@ export default function SignUp({navigation}) {
                 </View>
 
                 <DropDownPicker
-                    items={[
-                        {
-                            label: 'Wartburg College',
-                            value: 'wartburg college',
-                        },
-                        {
-                            label: 'UK',
-                            value: 'uk',
-                        },
-                        {
-                            label: 'France',
-                            value: 'france',
-                        },
-                        {
-                            label: 'Wartburg College',
-                            value: 'wartburg college',
-                        },
-                        {
-                            label: 'UK',
-                            value: 'uk',
-                        },
-                        {
-                            label: 'France',
-                            value: 'france',
-                        },
-                        {
-                            label: 'Wartburg College',
-                            value: 'wartburg college',
-                        },
-                        {
-                            label: 'UK',
-                            value: 'uk',
-                        },
-                        {
-                            label: 'France',
-                            value: 'france',
-                        },
-                        {
-                            label: 'Wartburg College',
-                            value: 'wartburg college',
-                        },
-                        {
-                            label: 'UK',
-                            value: 'uk',
-                        },
-                        {
-                            label: 'France',
-                            value: 'france',
-                        },
-                        {
-                            label: 'Wartburg College',
-                            value: 'wartburg college',
-                        },
-                        {
-                            label: 'UK',
-                            value: 'uk',
-                        },
-                        {
-                            label: 'France',
-                            value: 'france',
-                        },
-                        {
-                            label: 'Wartburg College',
-                            value: 'wartburg college',
-                        },
-                        {
-                            label: 'UK',
-                            value: 'uk',
-                        },
-                        {
-                            label: 'France',
-                            value: 'france',
-                        },
-
-                    ]}
-                    defaultValue={college}
+                    items={universities}
+                    defaultValue={''}
                     searchable={true}
+                    placeholder={'Institution'}
                     labelStyle={{color: COLORS.black}}
                     containerStyle={styles.inputContainer}
                     style={{backgroundColor: 'rgba(255,255,255,0.2)', color: 'blue'}}
@@ -172,12 +123,15 @@ export default function SignUp({navigation}) {
                     }}
                     dropDownStyle={{backgroundColor: '#fafafa'}}
                     onChangeItem={(item) =>
-                        setCollege(item.value)
+                        setCollege(item)
                     }
                 />
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={() => register(email, password)}>
+                    <TouchableOpacity onPress={() => {
+                        register(name, email, password, college["value"])
+                    }
+                    }>
                         <Shadow style={styles.buttons}>
                             <Text style={styles.buttonText}>SIGNUP</Text>
                         </Shadow>
