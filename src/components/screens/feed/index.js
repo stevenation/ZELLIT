@@ -87,14 +87,15 @@ export default function Feed({navigation}) {
     function addItem() {
         database().ref(`${userData['college']}/Items/${userData['uid']}${date.toTimeString()}`)
             .set({
-                name: "1MORE earbuds",
-                price: "$30",
-                description: "Used for 4 months",
+                name: "GBBP",
+                price: "$15",
+                brand:"",
+                description: "The God of of the Bible and the God of philosophers\n Used it for 1 semester",
                 condition: "Used",
-                category: "Electronics",
-                payment_method: "Cash",
-                img_url: "gs://flash-chat-ios-13-7845d.appspot.com/images/items/4.png",
-                uid: "LDlUcsGpkrhy9GJpByXOBzvpKNb2"
+                category: "Textbooks",
+                payment_method: "Cash App",
+                img_url: "https://firebasestorage.googleapis.com/v0/b/flash-chat-ios-13-7845d.appspot.com/o/images%2Fitems%2F9.png?alt=media&token=540828ab-657a-45af-ab06-05db9337dd1c",
+                uid: "joYpScOIycN7cUSLoWYVzQZguv82"
             })
     }
 
@@ -118,7 +119,7 @@ export default function Feed({navigation}) {
                 }}>
                     <Text>Touch</Text>
                 </TouchableOpacity>
-                <Text style={styles.collegeName}>{capitalize(userData.college)}</Text>
+                <Text style={styles.collegeName}>{userData.college}</Text>
                 <TouchableOpacity onPress={() => logout()}>
                     <Text>-</Text>
                 </TouchableOpacity>
