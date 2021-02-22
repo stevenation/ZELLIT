@@ -31,7 +31,7 @@ export default function ItemCell({itemData, navigation}) {
     return (
         <View style={styles.cellContainer}>
             <Shadow style={styles.cell}>
-                <TouchableOpacity onPress={() => navigation.navigate('ItemScreen', {itemData: itemData, url: imgUrl})}>
+                <TouchableOpacity onPress={() => navigation.navigate('ItemScreen', {itemData: itemData})}>
                     <Image resizeMode={"center"}
                            borderTopLeftRadius={25}
                            borderTopRightRadius={25}
