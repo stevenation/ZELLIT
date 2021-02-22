@@ -46,10 +46,10 @@ export default function ItemScreen(item) {
             </TouchableOpacity>
             <SwiperFlatList
                 style={{paddingVertical: 10}}
-                index={1}
+                index={0}
                 paginationStyle={{height: 380}}
                 showPagination
-                data={images}
+                data={['1']}
                 renderItem={({item}) => (
                     <Image style={{height: 400, width: Dimensions.get('screen').width}}
                            source={{uri: itemData.img_url ? itemData.img_url : null}}/>
