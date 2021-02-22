@@ -12,7 +12,7 @@ import {AuthContext} from "../../../navigation/AuthProvider";
 
 // const img = require('../../../../src/components/screens/feed/1.png')
 
-const categories = [
+export const categories = [
     {
         id: '1',
         name: "School",
@@ -58,9 +58,7 @@ export default function Feed({navigation}) {
     const date = new Date()
 
     function getUserData() {
-
         database().ref(`Users/${userId}`)
-
             .on('value', snapshot => {
                 setUserData(snapshot.val())
                 database().ref(`${snapshot.val()['college']}/Items`)
@@ -99,7 +97,8 @@ export default function Feed({navigation}) {
                 uid: "LDlUcsGpkrhy9GJpByXOBzvpKNb2"
             })
     }
-    function capitalize(str){
+
+    function capitalize(str) {
         return str.replace(/\w\S*/g, (w) =>
             (w.replace(/^\w/, (c) =>
                 c.toUpperCase())))
@@ -107,7 +106,6 @@ export default function Feed({navigation}) {
 
     useEffect(() => {
         getUserData()
-
     }, []);
 
 
@@ -137,7 +135,7 @@ export default function Feed({navigation}) {
                     horizontal={true}
                     data={categories}
                     renderItem={({item}) => (
-                        <TouchableOpacity style={styles.categoryItem}>
+                        <TouchableOpacity onPress={()=>navigation.navigate('categoryScreen', {itemsData:itemsData, name:item.name})} style={styles.categoryItem}>
                             <View style={styles.catBackground}>
                                 <MaterialCommunityIcons name={item.icon} size={24} color={COLORS.white}/>
                             </View>
@@ -149,7 +147,7 @@ export default function Feed({navigation}) {
                     <View>
                         <View style={styles.section}>
                             <Text style={styles.sectionTitle}>Recent</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={()=>navigation.navigate('categoryScreen', {itemsData:itemsData})}>
                                 <Text style={styles.seeAll}>See all</Text>
                             </TouchableOpacity>
 
