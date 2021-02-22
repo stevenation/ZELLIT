@@ -15,7 +15,7 @@ export default function CategoryScreen(itemsData) {
 
     var itemData = []
     data.forEach((item) => {
-        console.log(item.category)
+        // console.log(item.category)
         if (catName === "School" && ['Stationery', 'Textbooks'].includes(item.category)) {
             itemData.push(item)
         } else if (catName==="Electronics" && item.category === catName) {
@@ -31,8 +31,7 @@ export default function CategoryScreen(itemsData) {
         }
 
     })
-
-    console.log("data: ", itemData)
+    // console.log("data: ", itemData)
     return (
         <SafeAreaView>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
