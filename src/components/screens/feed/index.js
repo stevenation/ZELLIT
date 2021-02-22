@@ -8,9 +8,6 @@ import ItemCell from "./itemCell";
 import database from "@react-native-firebase/database";
 import {firebase} from "@react-native-firebase/auth";
 import {AuthContext} from "../../../navigation/AuthProvider";
-// import images from "../../../../../src/constants/images";
-
-// const img = require('../../../../src/components/screens/feed/1.png')
 
 export const categories = [
     {
@@ -114,15 +111,15 @@ export default function Feed({navigation}) {
         <View>
             <StatusBar barStyle={"dark-content"}/>
             <SafeAreaView>
-                <TouchableOpacity onPress={() => {
-                    addItem()
-                }}>
-                    <Text>Touch</Text>
-                </TouchableOpacity>
+                {/*<TouchableOpacity onPress={() => {*/}
+                {/*    addItem()*/}
+                {/*}}>*/}
+                {/*    <Text>Touch</Text>*/}
+                {/*</TouchableOpacity>*/}
                 <Text style={styles.collegeName}>{userData.college}</Text>
-                <TouchableOpacity onPress={() => logout()}>
-                    <Text>-</Text>
-                </TouchableOpacity>
+                {/*<TouchableOpacity onPress={() => logout()}>*/}
+                {/*    <Text>-</Text>*/}
+                {/*</TouchableOpacity>*/}
                 <View>
                     <SearchBar
                         searchIcon={{size: 24}}
