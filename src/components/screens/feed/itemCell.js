@@ -32,25 +32,25 @@ export default function ItemCell({itemData, navigation}) {
         <View style={styles.cellContainer}>
             <Shadow style={styles.cell}>
                 <TouchableOpacity onPress={() => navigation.navigate('ItemScreen', {itemData: itemData})}>
-                    <Image resizeMode={"center"}
-                           borderTopLeftRadius={25}
-                           borderTopRightRadius={25}
-                           style={styles.cellImage}
-                           source={{uri: itemData.img_url ? itemData.img_url : null}}/>
+                    <Image
+                        borderTopLeftRadius={25}
+                        borderTopRightRadius={25}
+                        resizeMode={"stretch"}
+                        style={styles.cellImage}
+                        source={{uri: itemData.img_url ? itemData.img_url : null}}/>
 
 
                 </TouchableOpacity>
                 <View style={styles.infoContainer}>
                     <View>
                         <Text style={styles.itemName}>{itemData['name']}</Text>
-                        <Text style={styles.itemPrice}>{itemData['price']}</Text>
+                        <Text style={styles.itemPrice}>{"$"+`${itemData['price']}`}</Text>
                     </View>
                     <TouchableOpacity onPress={() => {
                         setLike(!like)
                     }}>
                         <MaterialCommunityIcons name={'heart'} size={30} color={likeColor}/>
                     </TouchableOpacity>
-
                 </View>
             </Shadow>
         </View>
