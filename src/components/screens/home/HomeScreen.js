@@ -13,7 +13,6 @@ export default function HomeScreen() {
             <Stack.Screen name={'Home'} component={TabNavigator}/>
             <Stack.Screen name={'ItemScreen'} component={ItemScreen}/>
             <Stack.Screen name={'categoryScreen'} component={CategoryScreen}/>
-            {/*<Stack.Screen name={'Chat'} component={Chat}/>*/}
         </Stack.Navigator>
     )
 }
