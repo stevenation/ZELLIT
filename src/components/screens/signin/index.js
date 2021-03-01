@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+    Image
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Input} from 'react-native-elements';
@@ -22,12 +23,13 @@ export default function SignIn({navigation}) {
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} />
       <SafeAreaView>
-        <View style={styles.logo}>
-          <MaterialCommunityIcons
-            name={'music-note-whole-dotted'}
-            size={170}
-            style={{color: COLORS.blue}}
-          />
+        <View style={styles.logoContainer}>
+          {/*<MaterialCommunityIcons*/}
+          {/*  name={'music-note-whole-dotted'}*/}
+          {/*  size={170}*/}
+          {/*  style={{color: COLORS.blue}}*/}
+          {/*/>*/}
+          <Image style={styles.logo} source={require("./logo.png")} />
         </View>
         <View style={styles.inputContainer}>
           <Input
