@@ -52,6 +52,7 @@ export default function ItemScreen(item) {
                 data={['1']}
                 renderItem={({item}) => (
                     <Image style={{height: 400, width: Dimensions.get('screen').width}}
+                           resizeMode={"stretch"}
                            source={{uri: itemData.img_url ? itemData.img_url : null}}/>
                 )
                 }
@@ -98,7 +99,7 @@ export default function ItemScreen(item) {
 
                 </View>
                 <View style={{alignContent: 'center', padding: 20, alignItems: "flex-end"}}>
-                    <Text style={styles.price}>{itemData.price}</Text>
+                    <Text style={styles.price}>{"$" + `${itemData.price}`}</Text>
                     <Text style={{fontSize: 18}}>{itemData.payment_method}</Text>
                     <TouchableOpacity onPress={() => {
                         setLike(!like)
