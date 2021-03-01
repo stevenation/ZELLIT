@@ -61,6 +61,7 @@ export default function TabNavigator() {
                             size={25}
                             color={color}/>
                     ),
+                    
                     // tabBarBadge: 53
                 }}/>
             <Tab.Screen
