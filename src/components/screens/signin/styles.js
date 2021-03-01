@@ -7,12 +7,20 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'center',
   },
+  logoContainer:{
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginVertical: 50,
+
+  },
   logo: {
     alignSelf: 'center',
     alignItems: 'center',
-    width: Dimensions.get('window').width * 0.7,
-    height: Dimensions.get('window').height / 5,
-    marginVertical: 50,
+    width: 150,
+    height: 150,
+    resizeMode: "stretch",
+    borderRadius:75
+
   },
   inputContainer: {
     backgroundColor: 'rgba(0,0,0,0.2)',
