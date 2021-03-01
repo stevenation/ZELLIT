@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "ios": "react-native run-ios --verbose",
     "start": "react-native start",
     "pod-ios": "cd ios; pod install; cd ..; react-native run-ios ",
     "test": "jest",
@@ -24,6 +24,9 @@
     "react-native-dropdown-picker": "^3.8.0",
     "react-native-elements": "^3.1.0",
     "react-native-gesture-handler": "^1.10.1",
+    "react-native-image-crop-picker": "^0.36.0",
+    "react-native-image-picker": "^3.2.1",
+    "react-native-image-resizer": "^1.4.3",
     "react-native-neomorph-shadows": "^1.1.2",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-super-grid": "^4.1.1",
