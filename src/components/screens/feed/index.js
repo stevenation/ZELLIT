@@ -51,7 +51,6 @@ export default function Feed({navigation}) {
     const userId = firebase.auth().currentUser.uid
     const [userData, setUserData] = useState('')
     const [itemsData, setItemsData] = useState('')
-    const {logout} = useContext(AuthContext)
     const date = new Date()
 
     function getUserData() {
@@ -59,9 +58,9 @@ export default function Feed({navigation}) {
             .on('value', snapshot => {
                 setUserData(snapshot.val())
                 database().ref(`${snapshot.val()['college']}/Items`)
-                    .on('value', sp => {
+                    .on('value', snp => {
                         var lst = []
-                        sp.forEach((child => {
+                        snp.forEach((child => {
                             var item = child.val()
                             lst.push({
                                 key: child.key,
@@ -81,20 +80,20 @@ export default function Feed({navigation}) {
             })
     }
 
-    // function addItem() {
-    //     database().ref(`${userData['college']}/Items/${userData['uid']}${date.toTimeString()}`)
-    //         .set({
-    //             name: "GBBP",
-    //             price: "$15",
-    //             brand:"",
-    //             description: "The God of of the Bible and the God of philosophers\n Used it for 1 semester",
-    //             condition: "Used",
-    //             category: "Textbooks",
-    //             payment_method: "Cash App",
-    //             img_url: "https://firebasestorage.googleapis.com/v0/b/flash-chat-ios-13-7845d.appspot.com/o/images%2Fitems%2F9.png?alt=media&token=540828ab-657a-45af-ab06-05db9337dd1c",
-    //             uid: "joYpScOIycN7cUSLoWYVzQZguv82"
-    //         })
-    // }
+    function addItem() {
+        database().ref(`${userData['college']}/Items/${userData['uid']}${date.toTimeString()}`)
+            .set({
+                name: "Eraser",
+                price: "$2",
+                brand:"Staedler",
+                description: "Latex Free",
+                condition: "New",
+                category: "Stationery",
+                payment_method: "Cash App",
+                img_url: "https://firebasestorage.googleapis.com/v0/b/flash-chat-ios-13-7845d.appspot.com/o/images%2Fitems%2FScreen%20Shot%202021-02-22%20at%2010.25.44%20AM.png?alt=media&token=5d12ac68-6291-4747-8b18-d5b4b7837f27",
+                uid: "joYpScOIycN7cUSLoWYVzQZguv82"
+            })
+    }
 
     function capitalize(str) {
         return str.replace(/\w\S*/g, (w) =>
@@ -111,11 +110,7 @@ export default function Feed({navigation}) {
         <View>
             <StatusBar barStyle={"dark-content"}/>
             <SafeAreaView>
-                {/*<TouchableOpacity onPress={() => {*/}
-                {/*    addItem()*/}
-                {/*}}>*/}
-                {/*    <Text>Touch</Text>*/}
-                {/*</TouchableOpacity>*/}
+
                 <Text style={styles.collegeName}>{userData.college}</Text>
                 {/*<TouchableOpacity onPress={() => logout()}>*/}
                 {/*    <Text>-</Text>*/}
