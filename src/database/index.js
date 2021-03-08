@@ -2,13 +2,15 @@ import React from 'react'
 import database from "@react-native-firebase/database";
 import {firebase} from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage"
+var loading = false
 
-export function getUserData(userId, setUserData, setItemsData) {
-    database().ref(`Users/${userId}`)
-        .on('value', snapshot => {
+export async function getUserData(userId, setUserData, setItemsData) {
+    console.log(userId)
+    await database().ref(`Users/${userId}`)
+        .on('value', async snapshot => {
             setUserData(snapshot.val())
             console.log("setUserDATA", snapshot.val().college)
-            database().ref(`${snapshot.val()['college']}/Items`)
+            await database().ref(`${snapshot.val()['college']}/Items`)
                 .on('value', snp => {
                     var lst = []
                     snp.forEach((child => {
@@ -33,22 +35,22 @@ export function getUserData(userId, setUserData, setItemsData) {
 }
 
 
-export function addItem(item, userData) {
-    console.log(item)
+export async function addItem(item, userData) {
+    console.log("item: ",item)
     const date = new Date()
     const timeStr = date.toTimeString()
     const dateStr = date.toDateString()
-    database().ref(`${userData['college']}/Items/${userData['uid']}${dateStr}${timeStr}`)
+    await database().ref(`${userData['college']}/Items/${userData['uid']}${dateStr}${timeStr}`)
         .set(item)
 }
 
-function getDownloadURL(path) {
-    storage()
+async function getDownloadURL(path) {
+    await storage()
         .ref(path)
         .getDownloadURL()
 }
 
-export function uploadImage(upLoadUri, setImageUri) {
+export async function uploadImage(upLoadUri, setItems) {
     const date = new Date()
         .toString()
         .replace("-", "")
@@ -61,18 +63,22 @@ export function uploadImage(upLoadUri, setImageUri) {
         imgName += i
     }))
 
-    storage()
+    await storage()
         .ref("images/items/" + imgName)
         .putFile(upLoadUri)
         .then(async (snapshot) => {
+            console.log("path: ", snapshot.metadata.fullPath)
             await storage()
                 .ref(snapshot.metadata.fullPath)
                 .getDownloadURL()
                 .then((uri) => {
-                    console.log("uri:", uri)
-                    setImageUri(uri)
+                    setItems((prevState => (
+                        {
+                            ...prevState,
+                            img_url: uri
+                        }
+                    )))
                 })
-
             console.log(`${imgName} has been successfully uploaded.`)
         })
         .catch((error) => {
@@ -81,7 +87,13 @@ export function uploadImage(upLoadUri, setImageUri) {
 }
 
 //
-export const USER_ID = firebase.auth().currentUser.uid
-console.log("userid:", USER_ID)
+async function getUserID() {
+    let id = await firebase.auth().currentUser.uid
+    console.log("inside:",id)
+    return id
+}
+
+
+export const USER_ID =  firebase.auth().currentUser.uid
 
 
