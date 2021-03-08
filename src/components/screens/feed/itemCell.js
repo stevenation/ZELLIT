@@ -31,7 +31,6 @@ export default function ItemCell({itemData, navigation}) {
     )
     return (
         <View style={styles.cellContainer}>
-            {/*<Text>{itemData.path}</Text>*/}
             <Shadow style={styles.cell}>
                 <TouchableOpacity onPress={() => navigation.navigate('ItemScreen', {itemData: itemData})}>
                     <Image
