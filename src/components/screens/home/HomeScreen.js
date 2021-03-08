@@ -5,7 +5,6 @@ import ItemScreen from "../feed/itemScreen";
 import CategoryScreen from "../feed/categoryScreen";
 import addConfirm from "../add/addConfirm";
 import SeeAll from "../feed/seeAll";
-import CacheImage from "../feed/cacheImage";
 
 
 const Stack = createStackNavigator()
