@@ -121,9 +121,7 @@ export default class CacheImage extends React.Component {
     async addItem() {
         // console.log("item: ",item)
         const date = new Date()
-        const timeStr = date.toTimeString()
-        const dateStr = date.toDateString()
-        await database().ref(`${this.state.userData['college']}/Items/${this.state.userData['uid']}${dateStr}${timeStr}`)
+        await database().ref(`${this.state.userData['college']}/Items/${this.state.userData['uid']}${date.toString()}`)
             .set(this.state.itemsData)
     }
 
