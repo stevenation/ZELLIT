@@ -9,7 +9,6 @@ import {FlatGrid} from "react-native-super-grid";
 import ItemCell from "./itemCell";
 
 export default function CategoryScreen(itemsData) {
-    console.log(itemsData)
     const data = itemsData.route.params.itemsData
     const catName = itemsData.route.params.name
     var itemData = []
