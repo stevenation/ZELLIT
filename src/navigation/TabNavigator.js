@@ -3,14 +3,13 @@ import React from 'react'
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import Feed from "../components/screens/feed";
 import Entypo from 'react-native-vector-icons/Entypo'
-import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import Foundation from 'react-native-vector-icons/Foundation'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Chat from "../components/screens/chat";
 import {COLORS} from "../constants";
 import Profile from "../components/screens/profile";
 import Add from "../components/screens/add";
+import AddStack from "./AddStack";
 
 
 const Tab = createBottomTabNavigator()
@@ -43,7 +42,7 @@ export default function TabNavigator() {
                 }}/>
             <Tab.Screen
                 name={"Add"}
-                component={Add} options={{
+                component={AddStack} options={{
                 tabBarIcon: ({color}) => (
                     <MaterialCommunityIcons
                         name={'plus'}
@@ -61,7 +60,7 @@ export default function TabNavigator() {
                             size={25}
                             color={color}/>
                     ),
-                    
+
                     // tabBarBadge: 53
                 }}/>
             <Tab.Screen
