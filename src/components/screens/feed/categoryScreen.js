@@ -6,38 +6,35 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import {COLORS} from "../../../constants";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {FlatGrid} from "react-native-super-grid";
-// import images from "../../../../../src/constants/images";
 import ItemCell from "./itemCell";
 
 export default function CategoryScreen(itemsData) {
+    console.log(itemsData)
     const data = itemsData.route.params.itemsData
     const catName = itemsData.route.params.name
-
     var itemData = []
+
     data.forEach((item) => {
-        // console.log(item.category)
         if (catName === "School" && ['Stationery', 'Textbooks'].includes(item.category)) {
             itemData.push(item)
-        } else if (catName==="Electronics" && item.category === catName) {
+        } else if (catName === "Electronics" && item.category === catName) {
             itemData.push(item)
-        }else if (catName==="Transport" &&  item.category===catName){
+        } else if (catName === "Transportation" && item.category === catName) {
             itemData.push(item)
-        }else if (catName==="Women" &&  item.category===catName){
+        } else if (catName === "Women" && item.category === catName) {
             itemData.push(item)
-        }else if (catName==="Men" &&  item.category===catName){
+        } else if (catName === "Men" && item.category === catName) {
             itemData.push(item)
-        }else if (catName==="Other" &&  item.category===catName){
+        } else if (catName === "Other" && item.category === catName) {
             itemData.push(item)
         }
-
     })
-    // console.log("data: ", itemData)
     return (
         <SafeAreaView>
             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
 
                 <View>
-                    <TouchableOpacity onPress={() => itemsData.navigation.navigate("Feed")}>
+                    <TouchableOpacity onPress={() => itemsData.navigation.goBack()}>
                         <AntDesign name={'left'} size={25} style={{color: COLORS.blue}}/>
                     </TouchableOpacity>
                 </View>
@@ -50,7 +47,9 @@ export default function CategoryScreen(itemsData) {
                 horizontal={true}
                 data={categories}
                 renderItem={({item}) => (
-                    <TouchableOpacity style={styles.categoryItem}>
+                    <TouchableOpacity onPress={() =>
+                        itemsData.navigation.navigate('categoryScreen', {itemsData: data, name: item.name})}
+                                      style={styles.categoryItem}>
                         <View style={styles.catBackground}>
                             <MaterialCommunityIcons name={item.icon} size={24} color={COLORS.white}/>
                         </View>
@@ -62,10 +61,8 @@ export default function CategoryScreen(itemsData) {
                 itemDimension={125}
                 data={itemData}
                 renderItem={({item}) => (
-                    <ItemCell itemData={item} navigation={itemsData}/>
+                    <ItemCell itemData={item} navigation={itemsData.navigation}/>
                 )}/>
-
-
         </SafeAreaView>
     )
 }
