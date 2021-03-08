@@ -53,7 +53,7 @@ export default function ItemScreen(item) {
                 renderItem={({item}) => (
                     <Image style={{height: 400, width: Dimensions.get('screen').width}}
                            resizeMode={"stretch"}
-                           source={{uri: itemData.img_url ? itemData.img_url : null}}/>
+                           source={{uri: itemData.path ? itemData.path : null}}/>
                 )
                 }
             />
