@@ -13,7 +13,7 @@ export default function HomeScreen() {
     return (
         <Stack.Navigator screenOptions={{headerShown: false}}>
             <Stack.Screen name={'Feed'} component={TabNavigator}/>
-            <Stack.Screen name={'ItemScreen'} component={ItemScreen}/>
+            <Stack.Screen name={'ItemScreen'}  options={{headerShown: true}} component={ItemScreen}/>
             <Stack.Screen name={'categoryScreen'} component={CategoryScreen}/>
             <Stack.Screen name={'AddConfirm'} component={addConfirm}/>
             <Stack.Screen name={"SeeAll"} component={SeeAll}/>

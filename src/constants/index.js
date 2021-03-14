@@ -10,12 +10,13 @@ export const COLORS = {
   // colors
   black: '#1E1F20',
   white: '#FFFFFF',
-  lightGray: '#eff2f5',
-  gray: '#8b9097',
+  lightGray: '#c9cccf',
+  gray: '#868a8d',
   blue: '#2189dd',
   orange: '#ff304f',
   dark: '#2e3440',
   green: 'green',
+  lightGreen: "#AEE1CD"
 };
 export const SIZES = {
   // global sizes

@@ -47,7 +47,7 @@ export default class CacheImage extends React.Component {
                 uid: ""
             },
 
-            uploadUri: "",
+            upLoadUri: "",
             upload: false,
             categories: [
                 {
@@ -111,6 +111,15 @@ export default class CacheImage extends React.Component {
     }
 
     async UNSAFE_componentWillMount() {
+
+        this.setState((prevState => (
+            {
+                itemsData: {
+                    ...prevState.itemsData,
+                    uid: this.state.userId
+                }
+            }
+        )))
         await database().ref(`Users/${this.state.USER_ID}`)
             .on('value', async snapshot => {
                 await this.setState({userData: snapshot.val()})
@@ -160,10 +169,10 @@ export default class CacheImage extends React.Component {
     }
 
     renderImage() {
-        if (this.state.uploadUri !== "") {
-            return (this.state.uploadUri === "" ? null :
+        if (this.state.upLoadUri !== "") {
+            return (this.state.upLoadUri === "" ? null :
                     <Image
-                        source={{uri: this.state.uploadUri}}
+                        source={{uri: this.state.upLoadUri}}
                         resizeMode={"stretch"}
                         style={{width: 65, height: 65, margin: 5}}/>
             )
@@ -190,8 +199,16 @@ export default class CacheImage extends React.Component {
                                     cropping: true
                                 }).then(image => {
                                     let uri = image.path
-                                    this.state.img.push({id: "1", uri: uri})
-                                    this.setState({uploadUri: uri})
+                                    console.log(uri)
+                                    this.setState({
+                                        img:
+                                            {
+                                                id: "1",
+                                                uri: uri
+                                            }
+                                    })
+                                    // this.state.img.push({id: "1", uri: uri})
+                                    this.setState({upLoadUri: uri})
                                 }).catch(e =>
                                     console.log(e))
 
@@ -412,8 +429,10 @@ export default class CacheImage extends React.Component {
                             style={{width: 100, height: 80, alignSelf: "center", borderRadius: 40}}
                             onPress={async () => {
                                 this.setState({upload: true})
+
                                 if (this.state.itemsData.name !== "" || this.state.itemsData.condition !== "" || this.state.itemsData.category !== "") {
-                                    await this.uploadImages(this.state.uploadUri)
+                                    await this.uploadImages(this.state.upLoadUri)
+                                    console.log(this.state.upLoadUri)
                                     await this.addItem()
                                     console.log("item added")
                                     this.props.navigation.navigate("AddConfirm")

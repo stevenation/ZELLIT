@@ -55,7 +55,6 @@ export default function CategoryScreen(itemsData) {
                         <Text numberOfLines={1}>{item.name}</Text>
                     </TouchableOpacity>
                 )}/>
-
             <FlatGrid
                 itemDimension={125}
                 data={itemData}

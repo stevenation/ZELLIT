@@ -18,8 +18,10 @@ import {SwiperFlatList} from 'react-native-swiper-flatlist'
 import database from "@react-native-firebase/database";
 import storage from '@react-native-firebase/storage';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import {useHeaderHeight} from "@react-navigation/stack";
 
 export default function ItemScreen(item) {
+    const height = useHeaderHeight()+13
     const [like, setLike] = useState(false)
     const [likeColor, setLikeColor] = useState(COLORS.gray)
     const [sellerInfo, setSellerInfo] = useState('')
@@ -59,6 +61,7 @@ export default function ItemScreen(item) {
 
 
     }, [like, profilePictureUrl])
+    console.log(sellerInfo)
 
     return (
         <SafeAreaView>
@@ -236,7 +239,7 @@ export default function ItemScreen(item) {
 
                     </View>
                     <View>
-                        <Text style={styles.postDate}>Posted Yesterday</Text>
+                        <Text style={styles.postDate}>Posted Today</Text>
                     </View>
                 </View>
 
@@ -261,7 +264,10 @@ export default function ItemScreen(item) {
 
                                 </View>
                                 <View style={{paddingHorizontal: 5}}>
-                                    <Button title={'Chat'} containerStyle={styles.buyButton}/>
+                                    <Button onPress={()=>{
+                                        item.navigation.navigate("Chat", {screen:"ConversationScreen", params:{user: sellerInfo, height:height}})
+                                    }
+                                    } title={'Chat'} containerStyle={styles.buyButton}/>
                                 </View>
 
                             </View>

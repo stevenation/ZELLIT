@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useMemo} from 'react'
 import {FlatList, RefreshControl, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View} from 'react-native'
 import {SearchBar} from "react-native-elements";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -8,6 +8,7 @@ import ItemCell from "./itemCell";
 import database from "@react-native-firebase/database";
 import {firebase} from "@react-native-firebase/auth";
 import * as FileSystem from "expo-file-system"
+import shortHash from "shorthash2";
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -62,6 +63,33 @@ export default class Feed extends React.Component {
 
         }
     }
+
+    checkUserStatus() {
+        var userStatusDatabaseRef = database().ref('/status/' + this.state.userId);
+        var isOfflineForDatabase = {
+            state: 'offline',
+            last_changed: database.ServerValue.TIMESTAMP,
+        };
+        var isOnlineForDatabase = {
+            state: 'online',
+            last_changed: database.ServerValue.TIMESTAMP,
+        };
+        database().ref('.info/connected').on('value', function (snapshot) {
+            if (!snapshot.val()) {
+                return;
+            }
+            userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function () {
+                userStatusDatabaseRef.set(isOnlineForDatabase);
+            })
+        })
+    }
+//     useEffect(() => {
+//     return () => checkUserStatus()
+// }, [])
+
+
+
+
     capitalize(str) {
         return str.replace(/\w\S*/g, (w) =>
             (w.replace(/^\w/, (c) =>
@@ -94,11 +122,11 @@ export default class Feed extends React.Component {
                     await database().ref(`${snapshot.val()['college']}/Items`)
                         .on('value', snp => {
                             var lst = []
-                            var count = 0
+
                             snp.forEach((async child => {
-                                var item = child.val()
-                                const path = `${FileSystem.cacheDirectory}items/item${count}`
-                                count = count + 1
+                                const item = child.val()
+                                const name  = shortHash(item.name)
+                                const path = `${FileSystem.cacheDirectory}items/${name}`
                                 const image = await FileSystem.getInfoAsync(path)
                                 var uri
                                 if (image.exists) {
@@ -135,7 +163,13 @@ export default class Feed extends React.Component {
 
     UNSAFE_componentWillMount() {
         this.fetchData()
+        this.checkUserStatus()
     }
+    componentDidMount() {
+        // this.fetchData()
+        // console.log(this.state.itemsData)
+    }
+
     render() {
 
 
@@ -173,7 +207,7 @@ export default class Feed extends React.Component {
                         )}/>
 
                     <ScrollView
-                        style={{maxHeight: 600}}
+                        style={{maxHeight: 700}}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.state.refresh}
@@ -181,16 +215,16 @@ export default class Feed extends React.Component {
                             />
                         }
                     >
-                        <View>
-                            <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>Recent</Text>
-                            </View>
-                            <FlatList horizontal={true} data={this.state.itemsData} renderItem={({item}) => {
-                                return (
-                                    <ItemCell itemData={item} navigation={this.props.navigation}/>
-                                )
-                            }}/>
-                        </View>
+                        {/*<View>*/}
+                        {/*    <View style={styles.section}>*/}
+                        {/*        <Text style={styles.sectionTitle}>Recent</Text>*/}
+                        {/*    </View>*/}
+                        {/*    <FlatList initialNumToRender={4} horizontal={true} data={this.state.itemsData} renderItem={({item}) => {*/}
+                        {/*        return (*/}
+                        {/*            <ItemCell itemData={item} navigation={this.props.navigation}/>*/}
+                        {/*        )*/}
+                        {/*    }}/>*/}
+                        {/*</View>*/}
                         <View>
                             <View style={styles.section}>
                                 <Text style={styles.sectionTitle}>Electronics</Text>
@@ -207,7 +241,7 @@ export default class Feed extends React.Component {
 
                             </View>
 
-                            <FlatList horizontal={true} data={this.state.itemsData} renderItem={({item}) => {
+                            <FlatList initialNumToRender={4} horizontal={true} data={this.state.itemsData} renderItem={({item}) => {
                                 if (item.category === "Electronics") {
                                     return (<ItemCell itemData={item} navigation={this.props.navigation}/>)
                                 }

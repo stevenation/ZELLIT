@@ -10,6 +10,8 @@ import {COLORS} from "../constants";
 import Profile from "../components/screens/profile";
 import Add from "../components/screens/add";
 import AddStack from "./AddStack";
+import ChatStack from "./ChatStack";
+import {getFocusedRouteNameFromRoute} from "@react-navigation/core";
 
 
 const Tab = createBottomTabNavigator()
@@ -52,8 +54,17 @@ export default function TabNavigator() {
             }}/>
             <Tab.Screen
                 name={"Chat"}
-                component={Chat}
-                options={{
+                component={ChatStack}
+
+
+                options={({ route }) => ({
+                    tabBarVisible: ((route) => {
+                        const routeName = getFocusedRouteNameFromRoute(route) ?? ""
+                        if (routeName === "ConversationScreen") {
+                            return false
+                        }
+                        return true
+                    })(route),
                     tabBarIcon: ({color}) => (
                         <MaterialCommunityIcons
                             name={'message-minus-outline'}
@@ -61,8 +72,13 @@ export default function TabNavigator() {
                             color={color}/>
                     ),
 
-                    // tabBarBadge: 53
-                }}/>
+
+                })}
+
+
+
+
+            />
             <Tab.Screen
                 name={"Profile"}
                 component={Profile}
