@@ -1,6 +1,5 @@
-import React, {useEffect, useMemo} from 'react'
+import React from 'react'
 import {FlatList, RefreshControl, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View} from 'react-native'
-import {SearchBar} from "react-native-elements";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {styles} from "./styles";
 import {COLORS} from "../../../constants";
@@ -120,7 +119,7 @@ export default class Feed extends React.Component {
                     this.setState({userData: snapshot.val()})
                     this.setState({title: this.capitalize(snapshot.val()['college'])})
                     await database().ref(`${snapshot.val()['college']}/Items`)
-                        .on('value', snp => {
+                        .on('value', (snp )=> {
                             var lst = []
 
                             snp.forEach((async child => {

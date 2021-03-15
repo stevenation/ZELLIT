@@ -121,7 +121,7 @@ export default class CacheImage extends React.Component {
             }
         )))
         await database().ref(`Users/${this.state.USER_ID}`)
-            .on('value', async snapshot => {
+            .on('value', async (snapshot) => {
                 await this.setState({userData: snapshot.val()})
             })
 

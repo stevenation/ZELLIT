@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --verbose",
-    "start": "react-native start",
+    "ios": "react-native run-ios --verbose --simulator='iPhone 11 Pro' ",
+    "start": "react-native start --verbose",
     "pod-ios": "cd ios; pod install; cd ..; react-native run-ios ",
     "test": "jest",
     "lint": "eslint ."
@@ -21,7 +21,7 @@
     "@react-navigation/stack": "^5.14.3",
     "expo-file-system": "^10.0.0",
     "react": "17.0.1",
-    "react-native": "0.64.0",
+    "react-native": "0.63.4",
     "react-native-appearance": "^0.3.4",
     "react-native-dropdown-picker": "^4.0.2",
     "react-native-elements": "^3.3.1",

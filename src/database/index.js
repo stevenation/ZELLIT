@@ -7,7 +7,7 @@ var loading = false
 export async function getUserData(userId, setUserData, setItemsData) {
     console.log(userId)
     await database().ref(`Users/${userId}`)
-        .on('value', async snapshot => {
+        .on('value', async (snapshot) => {
             setUserData(snapshot.val())
             console.log("setUserDATA", snapshot.val().college)
             await database().ref(`${snapshot.val()['college']}/Items`)

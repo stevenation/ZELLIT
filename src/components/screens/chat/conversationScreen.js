@@ -13,7 +13,7 @@ export default function ConversationScreen(props, {navigation}) {
     LogBox.ignoreLogs(['Animated: `useNativeDriver` was not specified. This is a required option and must be explicitly set to `true` or `false`']);
     LogBox.ignoreLogs(["Animated.event now requires a second argument"])
     const users = props.route.params.user
-    console.log(props.route.params.user)
+    // console.log(props.route.params.user)
     const userId = firebase.auth().currentUser.uid
     const _id = userId
     const date = new Date()
@@ -25,10 +25,18 @@ export default function ConversationScreen(props, {navigation}) {
     useEffect(() => {
         const unsubscribe = dbRef
             .orderByChild("createdAt")
-            .on("child_added", snapshot => {
+            .on("child_added", (snapshot) => {
                 if (typeof (snapshot) !== 'undefined') {
                     if (snapshot.exists() && snapshot.val() !== "") {
-                        setMessages((previousMessages) => GiftedChat.append(previousMessages, snapshot.val()))/**/
+                        if (snapshot.val().received !== true && snapshot.val().user._id !== userId) {
+                            updateReceived(snapshot.key)
+                            setMessages((previousMessages) => GiftedChat.append(previousMessages, {
+                                ...snapshot.val(),
+                                received: true
+                            }))
+                        } else {
+                            setMessages((previousMessages) => GiftedChat.append(previousMessages, snapshot.val()))/**/
+                        }
                     }
                 }
             })
@@ -40,8 +48,8 @@ export default function ConversationScreen(props, {navigation}) {
         const writes = messages.map((m) => {
                 const time = database.ServerValue.TIMESTAMP
                 database()
-                    .ref(`chatMessages/${users.id}/${date.getTime()}`)
-                    .set({...m, createdAt: time})
+                    .ref(`chatMessages/${users.id}/${new Date().getTime()}`)
+                    .set({...m, createdAt: time, received: false, sent: true})
                 database().ref(`chats/${users.id}`)
                     .set({
                         lastMessage: messages[0].text,
@@ -90,7 +98,6 @@ export default function ConversationScreen(props, {navigation}) {
                 .ref(path)
                 .putFile(uri)
                 .then(async (snapshot) => {
-                    console.log(snapshot)
                     storage()
                         .ref(path)
                         .getDownloadURL()
@@ -163,6 +170,17 @@ export default function ConversationScreen(props, {navigation}) {
 
             />
         )
+    }
+
+    function updateReceived(key) {
+        if (key) {
+            database()
+                .ref(`chatMessages/${users.id}`)
+                // .child("1615756729620")
+                .child(key)
+                .update({received: true})
+
+        }
     }
 
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useLayoutEffect, useState} from 'react'
 import {
     Dimensions,
     Image,
@@ -21,7 +21,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import {useHeaderHeight} from "@react-navigation/stack";
 
 export default function ItemScreen(item) {
-    const height = useHeaderHeight()+13
+    const height = useHeaderHeight() + 13
     const [like, setLike] = useState(false)
     const [likeColor, setLikeColor] = useState(COLORS.gray)
     const [sellerInfo, setSellerInfo] = useState('')
@@ -31,6 +31,24 @@ export default function ItemScreen(item) {
     const [catModalVisible, setCatModalVisible] = useState(false)
     const [confirmModalVisible, setConfirmModalVisible] = useState(false)
     const categories = ["fraud", "illegal_items", "spam", "harassment", "nudity", "hate_speech"]
+
+    useLayoutEffect(()=>{
+        item.navigation.setOptions({
+            headerBackTitle: " ",
+            headerRight: () => (
+                <TouchableOpacity
+                    style={{paddingHorizontal: 5}}
+                    onPress={() => {
+                        setModalVisible(true)
+
+                    }}
+                >
+                    <MaterialCommunityIcons name={"dots-horizontal"} size={30}/>
+                </TouchableOpacity>
+            )
+        })
+    })
+
 
 
     function reportItem(cat) {
@@ -47,7 +65,7 @@ export default function ItemScreen(item) {
 
         database()
             .ref(`Users/${itemData.uid}`)
-            .on('value', snapshot => {
+            .on('value', (snapshot) => {
                 setSellerInfo(snapshot.val())
                 storage()
                     .ref(`/images/${snapshot.val().profile_picture}`)
@@ -61,28 +79,11 @@ export default function ItemScreen(item) {
 
 
     }, [like, profilePictureUrl])
-    console.log(sellerInfo)
 
     return (
         <SafeAreaView>
-            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                <TouchableOpacity onPress={() => item.navigation.navigate("Feed")}>
-                    <AntDesign name={'left'} size={25} style={{color: COLORS.blue}}/>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={{paddingHorizontal: 5}}
-                    onPress={() => {
-                        setModalVisible(true)
-
-                    }}
-                >
-                    <MaterialCommunityIcons name={"dots-horizontal"} size={30}/>
-                </TouchableOpacity>
-            </View>
             <View>
                 <View>
-
-
                     <Modal
                         animationType="slide"
                         transparent={true}
@@ -260,12 +261,23 @@ export default function ItemScreen(item) {
                             </View>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={{paddingRight: 5}}>
-                                    <Button title={'Buy'} containerStyle={styles.buyButton}/>
+                                    <Button onPress={() => {
+                                        item.navigation.navigate("Buy", {
+                                            itemsData: {
+                                                ...itemData,
+                                                sellerName: sellerInfo.name, sellerUid: sellerInfo.uid
+                                            }, height:height, sellerInfo:sellerInfo
+                                        })
+                                    }}
+                                            title={'Buy'} containerStyle={styles.buyButton}/>
 
                                 </View>
                                 <View style={{paddingHorizontal: 5}}>
-                                    <Button onPress={()=>{
-                                        item.navigation.navigate("Chat", {screen:"ConversationScreen", params:{user: sellerInfo, height:height}})
+                                    <Button onPress={() => {
+                                        item.navigation.navigate("Chat", {
+                                            screen: "ConversationScreen",
+                                            params: {user: sellerInfo, height: height}
+                                        })
                                     }
                                     } title={'Chat'} containerStyle={styles.buyButton}/>
                                 </View>
@@ -310,8 +322,7 @@ export default function ItemScreen(item) {
                 </View>
                 <View style={{height: 50}}></View>
             </ScrollView>
-
-
         </SafeAreaView>
+
     )
 }

@@ -43,7 +43,7 @@ export function ChatScreen() {
         function onlineStatus(userId) {
             database()
                 .ref(`status/${userId}`)
-                .on('value', snapshot => {
+                .on('value', (snapshot) => {
                     if (snapshot.val().state === "online"){
                         setState("online")
                     }else{

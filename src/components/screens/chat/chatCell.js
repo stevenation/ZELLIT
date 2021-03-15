@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native'
 import {styles} from "./styles";
 import database from "@react-native-firebase/database"
@@ -13,25 +13,31 @@ export default function ChatCell({user, height, navigation}) {
     const [userName, setUserName] = useState("")
     const [imageProfile, setImageProfile] = useState("default")
     const userId = firebase.auth().currentUser.uid
-
     const path = `${FileSystem.cacheDirectory}profilepictures/`
     const lastSent = new Date(user.lastSent * 1000).toLocaleTimeString().slice(0, 5)
-    user.users.user1 === userId ? user1 = user.users.user2 : user1 = user.users.user1
+    if (user!==[]) {
+        user.users.user1 === userId ? user1 = user.users.user2 : user1 = user.users.user1
 
-    function getUserName() {
-        database()
+    }else{
+        console.log("emptyyyyyyy")
+    }
+useEffect(()=>{
+
+    async function getUserName() {
+        await database()
             .ref(`Users/${user1}`)
             .once("value")
-            .then(snapshot => {
+            .then((snapshot) => {
                 setUserName(snapshot.val().name)
-                console.log(snapshot.val().profile_picture)
                 if (typeof (snapshot.val().profile_picture) !== "undefined") {
                     setImageProfile(snapshot.val().profile_picture)
                 }
             })
     }
 
-    getUserName()
+        getUserName()
+
+}, [])
 
     function showUnread() {
         if (user.unread > 0) {
