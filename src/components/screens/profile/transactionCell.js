@@ -7,12 +7,11 @@ import Feather from 'react-native-vector-icons/Feather';
 
 export default function TransactionCell(data, {navigation}) {
   const item = data.data;
-  console.log(navigation, data);
   return (
     <TouchableOpacity
       onPress={() => {
         if (item.state === 'buy') {
-          data.navigation.navigate('BuyTransactionScreen');
+          data.navigation.navigate('BuyTransactionScreen', {data: item});
         } else {
           data.navigation.navigate('SellTransactionScreen', {data: item});
         }

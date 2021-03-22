@@ -95,9 +95,7 @@ export default class Feed extends React.Component {
           });
       });
   }
-  //     useEffect(() => {
-  //     return () => checkUserStatus()
-  // }, [])
+ 
 
   capitalize(str) {
     return str.replace(/\w\S*/g, (w) =>
@@ -178,10 +176,7 @@ export default class Feed extends React.Component {
     this.fetchData();
     this.checkUserStatus();
   }
-  componentDidMount() {
-    // this.fetchData()
-    // console.log(this.state.itemsData)
-  }
+  
 
   render() {
     return (

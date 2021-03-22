@@ -44,6 +44,7 @@ export default function Buy(item) {
         progress: 'Not Paid',
         itemName: itemData.name,
         buyerName: itemData.buyerName,
+        complete: false,
       });
 
       database()

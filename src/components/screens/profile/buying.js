@@ -1,6 +1,6 @@
 import {firebase} from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -12,68 +12,14 @@ import {COLORS} from '../../../constants';
 import {styles} from '../profile/styles';
 import TransactionCell from './transactionCell';
 
-const buyingD = [
-  {
-    id: '1',
-    itemName: 'Piano',
-    sellerName: 'Jon Doe',
-    progress: 'Not Paid',
-    state: 'buy',
-  },
-  {
-    id: '2',
-    itemName: 'Key Board',
-    sellerName: 'Johnny',
-    progress: 'Complete',
-    state: 'buy',
-  },
-  {
-    id: '3',
-    itemName: 'Piano',
-    sellerName: 'Jon Doe',
-    progress: 'Not Paid',
-    state: 'buy',
-  },
-  {id: '4', itemName: 'Piano', sellerName: 'Dan Loe', progress: 'Not Paid'},
-  {id: '5', itemName: 'Piano', sellerName: 'Zeph Sam', progress: 'Not Paid'},
-  {id: '6', itemName: 'Piano', sellerName: 'Jon Doe', progress: 'Not Paid'},
-  {id: '7', itemName: 'Piano', sellerName: 'Jon Doe', progress: 'Not Paid'},
-  {id: '8', itemName: 'Piano', sellerName: 'Jon Doe', progress: 'Not Paid'},
-];
-const sellingD = [
-  {
-    id: '1',
-    itemName: 'Piano hjvh',
-    sellerName: 'Jon jh Doe',
-    progress: 'Not Paid',
-  },
-  {
-    id: '2',
-    itemName: 'Key Board hjh',
-    sellerName: 'Jon hhj Doe',
-    progress: 'Complete',
-  },
-  {
-    id: '7',
-    itemName: 'Piano hkk',
-    sellerName: 'Jon hkh Doe',
-    progress: 'Not Paid',
-  },
-  {
-    id: '8',
-    itemName: 'Piano jhjh',
-    sellerName: 'Jon jhjjj Doe',
-    progress: 'Not Paid',
-  },
-];
-
 export default class Buying extends Component {
   constructor(props) {
     super(props);
     this.state = {
       pending: true,
       bought: false,
-      data: [],
+      pendingData: [],
+      completeData: [],
       id: firebase.auth().currentUser.uid,
     };
   }
@@ -82,11 +28,18 @@ export default class Buying extends Component {
     database()
       .ref('transactions')
       .on('value', (snapshot) => {
-        var b = [];
+        var x = [];
+        var y = [];
         snapshot.forEach((child) => {
           if (child.val().buyerId === this.state.id) {
-            b.push(child.val());
-            this.setState({data: b});
+            console.log(child.val().complete);
+            if (child.val().complete) {
+              x.push({...child.val(), transID: child.key});
+            } else {
+              y.push({...child.val(), transID: child.key});
+            }
+            this.setState({completeData: x});
+            this.setState({pendingData: y});
           }
         });
       });
@@ -149,8 +102,8 @@ export default class Buying extends Component {
             </Text>
           </TouchableOpacity>
         </View>
-        {this.state.pending && this.Show(this.state.data)}
-        {this.state.bought && this.Show(this.state.data)}
+        {this.state.pending && this.Show(this.state.pendingData)}
+        {this.state.bought && this.Show(this.state.completeData)}
       </SafeAreaView>
     );
   }
