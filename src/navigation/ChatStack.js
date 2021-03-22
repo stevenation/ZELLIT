@@ -85,6 +85,8 @@ export function ChatScreen() {
         name={'Chats'}
         component={Chat}
         options={{
+          headerBackTitleVisible: false,
+          headerLeft: () => null,
           headerTitleStyle: {
             fontWeight: '700',
             fontSize: 30,
