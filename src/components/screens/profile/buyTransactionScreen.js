@@ -8,31 +8,34 @@ import {COLORS} from '../../../constants';
 import {styles} from '../profile/styles';
 import * as FileSystem from 'expo-file-system';
 import {Dimensions} from 'react-native';
+import { firebase } from '@react-native-firebase/auth';
 
 export default class BuyTransactionScreen extends Component {
   constructor(props) {
-    console.log('buyeeeeee', props.route.params.data);
     super(props);
     this.state = {
       data: props.route.params.data,
       showModal: false,
       id: props.route.params.data.transID,
+      sellerInfo: null,
     };
+  }
+
+  UNSAFE_componentWillMount() {
+    this.GetSellerInfo();
   }
 
   UNSAFE_componentWillUpdate() {
     database()
       .ref(`transactions/${this.state.data.transID}`)
       .on('child_changed', (snapshot) => {
-        console.log('keyyyy', snapshot.key);
         if (snapshot.val()) {
-          this.setState({data: {...snapshot.val(), transID: snapshot.key}});
+          this.setState({data: {...this.state.data, paid: true}});
         }
       });
   }
 
   ShowButton() {
-    console.log('paid:', this.state.data.paid);
     return (
       <>
         <Text style={{paddingBottom: 10}}>
@@ -80,7 +83,7 @@ export default class BuyTransactionScreen extends Component {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              Click ok to Confirm or Cancel to Go Back
+              Click ok to Confirm or Cancel to close
             </Text>
 
             <View style={{flexDirection: 'row'}}>
@@ -89,7 +92,7 @@ export default class BuyTransactionScreen extends Component {
                 onPress={() => {
                   this.UpdateTransaction();
                   this.setState({showModal: false});
-                  this.setState({paid: true});
+                  this.setState({data: {...this.state.data, paid: true}});
                 }}>
                 <Text style={styles.textStyle}>OK</Text>
               </TouchableHighlight>
@@ -108,6 +111,14 @@ export default class BuyTransactionScreen extends Component {
   }
   ShowComplete() {
     return <View style={styles.complete}>Complete</View>;
+  }
+  GetSellerInfo() {
+    database()
+      .ref(`Users/${this.state.data.sellerId}`)
+      .once('value')
+      .then((snapshot) => {
+        this.setState({sellerInfo: snapshot.val()});
+      });
   }
   render() {
     return (
@@ -138,18 +149,71 @@ export default class BuyTransactionScreen extends Component {
               : 'Waiting For Payment'}
           </Text>
         </View>
-        <Text style={{fontSize: 18, fontWeight: '700', paddingVertical: 10}}>
-          {this.state.data.sellerName}
-        </Text>
-        <Text
+        <View
           style={{
-            fontSize: 18,
-            fontWeight: '500',
-            color: COLORS.lightGray,
-            paddingBottom: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 10,
           }}>
-          {this.state.data.itemName}
-        </Text>
+          <View>
+            <Text
+              style={{fontSize: 18, fontWeight: '700', paddingVertical: 10}}>
+              {this.state.data.sellerName}
+            </Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '500',
+                color: COLORS.lightGray,
+                paddingBottom: 10,
+              }}>
+              {this.state.data.itemName}
+            </Text>
+          </View>
+          <Button
+            title={'Chat'}
+            style={{width: 80}}
+            onPress={async () => {
+              const key1 = firebase.auth().currentUser.uid;
+              const key2 = this.state.sellerInfo.uid;
+              // console.log(sellerInfo);
+              var id;
+
+              const key1_key2 = await database()
+                .ref(`chatMessages/${key1}_${key2}`)
+                .once('value')
+                .then((res) => res.exists());
+
+              const key2_key1 = await database()
+                .ref(`chatMessages/${key2}_${key1}`)
+                .once('value')
+                .then((res) => res.exists());
+
+              if (key1_key2) {
+                id = key1 + '_' + key2;
+              } else if (key2_key1) {
+                id = key2 + '_' + key1;
+              } else {
+                id = key1 + '_' + key2;
+              }
+              this.props.navigation.navigate('Chat', {
+                screen: 'ConversationScreen',
+                params: {
+                  user: {
+                    ...this.state.sellerInfo,
+                    id: id,
+                    users: {
+                      user1: key1,
+                      user2: this.state.sellerInfo.uid,
+                    },
+                  },
+                  height: 103,
+                },
+              });
+            }}
+          />
+        </View>
 
         {!this.state.data.paid && this.ShowButton()}
         {/* {this.state.data.paid && this.ShowPaid()} */}

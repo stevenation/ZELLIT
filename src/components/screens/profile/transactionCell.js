@@ -7,7 +7,6 @@ import Feather from 'react-native-vector-icons/Feather';
 
 export default function TransactionCell(data, {navigation}) {
   const item = data.data;
-  console.log('itemmm', item);
   return (
     <TouchableOpacity
       onPress={() => {

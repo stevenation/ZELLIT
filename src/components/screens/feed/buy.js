@@ -6,7 +6,6 @@ import {firebase} from '@react-native-firebase/auth';
 
 export default function Buy(item) {
   const itemData = item.route.params.itemsData;
-  console.log(itemData);
   const key1 = firebase.auth().currentUser.uid;
   const key2 = itemData.sellerUid;
   const users = {user1: key1, user2: key2};
@@ -45,6 +44,7 @@ export default function Buy(item) {
         itemName: itemData.name,
         buyerName: itemData.buyerName,
         complete: false,
+        paid: false,
       });
 
       database()
@@ -64,10 +64,8 @@ export default function Buy(item) {
         users: users,
       });
     };
-    console.log('key12', key1_key2);
-    console.log('key21', key2_key1);
+
     if (key1_key2) {
-      console.log(key1_key2);
       handleSend(key1, key2);
     } else if (key2_key1) {
       handleSend(key2, key1);

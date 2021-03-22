@@ -96,7 +96,6 @@ export function ChatScreen() {
         name={'ConversationScreen'}
         component={ConversationScreen}
         options={({navigation, route}) => {
-          console.log(route.params.user, route.params.height);
           return {
             headerTitle: () =>
               setStatus(route.params.user.name, route.params.user.uid),
