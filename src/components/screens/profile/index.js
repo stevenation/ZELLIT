@@ -1,30 +1,54 @@
-import React, {useContext, useState} from 'react'
-import {Text, TouchableOpacity, View} from 'react-native'
-import {SafeAreaView} from "react-native-safe-area-context";
-import {AuthContext} from "../../../navigation/AuthProvider";
-import {firebase} from "@react-native-firebase/auth";
-import database from "@react-native-firebase/database"
+import React, {Component, useContext, useState} from 'react';
+import {Text, TouchableOpacity, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {AuthContext} from '../../../navigation/AuthProvider';
+import {firebase} from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
-export default function Profile() {
-    const {logout} = useContext(AuthContext)
-    const userId = firebase.auth().currentUser.uid
-    const [name, setName] = useState('')
-    database().ref(`Users/${userId}`)
-        .once("value", (snapshot)=>{
-            setName(snapshot.val().name)
-        })
+export default class Profile extends Component {
+  static contextType = AuthContext;
+  constructor(props) {
+    super(props);
+    this.state = {
+      userId: firebase.auth().currentUser.uid,
+      name: '',
+    };
+  }
 
+  UNSAFE_componentWillMount() {
+    database()
+      .ref(`Users/${this.state.userId}`)
+      .once('value', (snapshot) => {
+        this.setState({name: snapshot.val().name});
+      });
+  }
 
+  render() {
     return (
-        <SafeAreaView>
-            <Text style={{fontSize:30}}>Profile</Text>
-            <Text style={{fontWeight:"700", fontSize: 30}}>{name}</Text>
-            <TouchableOpacity onPress={() => {
-                logout()
+      <SafeAreaView>
+        <Text style={{fontSize: 30}}>Profile</Text>
+        <Text style={{fontWeight: '700', fontSize: 30}}>{this.state.name}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            this.context.logout();
+          }}>
+          <Text>Log Out</Text>
+        </TouchableOpacity>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate('Buying');
             }}>
-                <Text>Log Out</Text>
-            </TouchableOpacity>
-
-        </SafeAreaView>
-    )
+            <Text>Buying</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate('Selling');
+            }}>
+            <Text>Selling</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 }
