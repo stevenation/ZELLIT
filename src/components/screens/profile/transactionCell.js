@@ -7,12 +7,13 @@ import Feather from 'react-native-vector-icons/Feather';
 
 export default function TransactionCell(data, {navigation}) {
   const item = data.data;
+  console.log('itemmm', item);
   return (
     <TouchableOpacity
       onPress={() => {
         if (item.state === 'buy') {
           data.navigation.navigate('BuyTransactionScreen', {data: item});
-        } else {
+        } else if (item.state === 'sell') {
           data.navigation.navigate('SellTransactionScreen', {data: item});
         }
       }}
@@ -32,7 +33,9 @@ export default function TransactionCell(data, {navigation}) {
           <View style={styles.progessContainer}>
             <Text>Progress</Text>
             <View style={{...styles.progress, backgroundColor: COLORS.green}}>
-              <Text style={styles.progressText}>{item.progress}</Text>
+              <Text style={styles.progressText}>
+                {item.complete ? 'Complete' : 'Pending'}
+              </Text>
             </View>
           </View>
         </View>

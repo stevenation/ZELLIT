@@ -8,11 +8,12 @@ import {styles} from '../profile/styles';
 
 export default class SellTransactionScreen extends Component {
   constructor(props) {
+    console.log('sellerrrrrr', props.route.params.data);
     super(props);
     this.state = {
-      showConfirm: false,
       data: props.route.params.data,
       showModal: false,
+      transId: props.route.params.data.transID,
     };
   }
 
@@ -20,23 +21,30 @@ export default class SellTransactionScreen extends Component {
     database()
       .ref(`transactions/${this.state.data.transID}`)
       .on('child_changed', (snapshot) => {
-        this.setState({data: {...snapshot.val(), transID: snapshot.key}});
+        if (snapshot.val()) {
+          this.setState({data: {...snapshot.val(), transID: snapshot.key}});
+        }
       });
   }
   ConfirmPayment() {
-    database().ref(`transactions/${this.state.data.transID}`);
+    database().ref(`transactions/${this.state.transId}`).update({
+      complete: true,
+    });
   }
   ShowButton() {
     return (
-      <Button
-        onPress={() => {
-          this.setState({showModal: true});
-        }}
-        title={'Confirm Payment'}
-        titleStyle={styles.confirmTitleStyle}
-        buttonStyle={styles.confirmButtonStyle}
-        style={styles.confirmStyle}
-      />
+      <>
+        <Text>Buyer Has Paid. Confirm Payment Below</Text>
+        <Button
+          onPress={() => {
+            this.setState({showModal: true});
+          }}
+          title={'Confirm Payment'}
+          titleStyle={styles.confirmTitleStyle}
+          buttonStyle={styles.confirmButtonStyle}
+          style={styles.confirmStyle}
+        />
+      </>
     );
   }
   ShowModal() {
@@ -51,13 +59,23 @@ export default class SellTransactionScreen extends Component {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Item Reported</Text>
-            <TouchableHighlight
-              style={{...styles.openButton, backgroundColor: '#2196F3'}}
-              onPress={() => {
-                this.setState({showModal: false});
-              }}>
-              <Text style={styles.textStyle}>OK</Text>
-            </TouchableHighlight>
+            <View style={{flexDirection: 'row'}}>
+              <TouchableHighlight
+                style={{...styles.openButton, backgroundColor: '#2196F3'}}
+                onPress={() => {
+                  this.ConfirmPayment();
+                  this.setState({showModal: false});
+                }}>
+                <Text style={styles.textStyle}>OK</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={{...styles.openButton, backgroundColor: '#2196F3'}}
+                onPress={() => {
+                  this.setState({showModal: false});
+                }}>
+                <Text style={styles.textStyle}>Cancel</Text>
+              </TouchableHighlight>
+            </View>
           </View>
         </View>
       </Modal>
@@ -69,11 +87,7 @@ export default class SellTransactionScreen extends Component {
   render() {
     return (
       <SafeAreaView>
-        <Text>
-          Waiting for {this.state.data.buyerName} to confirm payment.And once
-          payment has been received Confirm It Below
-        </Text>
-        {this.state.showConfirm && this.ShowButton()}
+        {this.state.data.paid && !this.state.data.complete && this.ShowButton()}
         {this.ShowModal()}
       </SafeAreaView>
     );

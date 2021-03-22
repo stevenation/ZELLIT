@@ -65,11 +65,12 @@ export default class Chat extends React.Component {
         var b = [];
         snapshot.forEach(async (child) => {
           const chat = {...child.val(), id: child.key};
-          b.push(chat);
+
           if (
             child.val().users.user1 === this.state.userId ||
             child.val().users.user2 === this.state.userId
           ) {
+            b.push(chat);
             this.setState({chats: b});
           }
         });

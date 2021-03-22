@@ -1,19 +1,22 @@
 import database from '@react-native-firebase/database';
 import React, {Component} from 'react';
-import {Modal, TouchableHighlight} from 'react-native';
+import {Image, Modal, TouchableHighlight} from 'react-native';
 import {View} from 'react-native';
 import {SafeAreaView, Text} from 'react-native';
 import {Button} from 'react-native-elements';
 import {COLORS} from '../../../constants';
 import {styles} from '../profile/styles';
+import * as FileSystem from 'expo-file-system';
+import {Dimensions} from 'react-native';
 
 export default class BuyTransactionScreen extends Component {
   constructor(props) {
+    console.log('buyeeeeee', props.route.params.data);
     super(props);
     this.state = {
       data: props.route.params.data,
       showModal: false,
-      paid: props.route.params.data.paid,
+      id: props.route.params.data.transID,
     };
   }
 
@@ -21,19 +24,19 @@ export default class BuyTransactionScreen extends Component {
     database()
       .ref(`transactions/${this.state.data.transID}`)
       .on('child_changed', (snapshot) => {
-        this.setState({data: {...snapshot.val(), transID: snapshot.key}});
+        console.log('keyyyy', snapshot.key);
+        if (snapshot.val()) {
+          this.setState({data: {...snapshot.val(), transID: snapshot.key}});
+        }
       });
   }
-  ConfirmPayment() {
-    database().ref(`transactions/${this.state.data.transID}`);
-  }
+
   ShowButton() {
     console.log('paid:', this.state.data.paid);
     return (
       <>
-        <Text>
-          Once Payment Has Been Made to {this.state.data.buyerName}. Confrim It
-          Below
+        <Text style={{paddingBottom: 10}}>
+          Once You Have Paid Confirm The Payment Below
         </Text>
         <Button
           onPress={() => {
@@ -47,24 +50,23 @@ export default class BuyTransactionScreen extends Component {
       </>
     );
   }
-  ShowPaid() {
-    console.log('paid:', this.state.data.paid);
-    return (
-      <Button
-        title={'Paid'}
-        titleStyle={styles.confirmTitleStyle}
-        buttonStyle={{
-          ...styles.confirmButtonStyle,
-          backgroundColor: COLORS.green,
-        }}
-        style={styles.confirmStyle}
-      />
-    );
-  }
+  // ShowPaid() {
+  //   console.log('paid:', this.state.data.paid);
+  //   this.state.data.paid && !this.state.data.complete ?
+  //   return (
+  //     <Button
+  //       title={'Paid'}
+  //       titleStyle={styles.confirmTitleStyle}
+  //       buttonStyle={{
+  //         ...styles.confirmButtonStyle,
+  //         backgroundColor: COLORS.green,
+  //       }}
+  //       style={styles.confirmStyle}
+  //     />
+  //   );
+  // }
   UpdateTransaction() {
-    database()
-      .ref(`transactions/${this.state.data.transID}`)
-      .update({paid: true});
+    database().ref(`transactions/${this.state.id}`).update({paid: true});
   }
   ShowModal() {
     return (
@@ -110,8 +112,47 @@ export default class BuyTransactionScreen extends Component {
   render() {
     return (
       <SafeAreaView>
+        <Image
+          style={{width: Dimensions.get('screen').width, height: 100}}
+          source={{
+            uri: `${FileSystem.cacheDirectory}items/${this.state.data.transID}`,
+          }}
+        />
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 30,
+            width: Dimensions.get('screen').width,
+            backgroundColor: this.state.data.complete
+              ? COLORS.green
+              : COLORS.blue,
+          }}>
+          <Text style={{fontWeight: '700', fontSize: 20, color: COLORS.white}}>
+            {this.state.data.paid && !this.state.data.complete
+              ? 'Waiting For Seller Confirmation'
+              : this.state.data.paid && this.state.data.complete
+              ? 'Bought'
+              : this.state.data.paid
+              ? 'Paid'
+              : 'Waiting For Payment'}
+          </Text>
+        </View>
+        <Text style={{fontSize: 18, fontWeight: '700', paddingVertical: 10}}>
+          {this.state.data.sellerName}
+        </Text>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: '500',
+            color: COLORS.lightGray,
+            paddingBottom: 10,
+          }}>
+          {this.state.data.itemName}
+        </Text>
+
         {!this.state.data.paid && this.ShowButton()}
-        {this.state.data.paid && this.ShowPaid()}
+        {/* {this.state.data.paid && this.ShowPaid()} */}
         {this.ShowModal()}
       </SafeAreaView>
     );

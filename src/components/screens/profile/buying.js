@@ -32,7 +32,6 @@ export default class Buying extends Component {
         var y = [];
         snapshot.forEach((child) => {
           if (child.val().buyerId === this.state.id) {
-            console.log(child.val().complete);
             if (child.val().complete) {
               x.push({...child.val(), transID: child.key});
             } else {

@@ -95,7 +95,9 @@ export default class Feed extends React.Component {
           });
       });
   }
- 
+  //     useEffect(() => {
+  //     return () => checkUserStatus()
+  // }, [])
 
   capitalize(str) {
     return str.replace(/\w\S*/g, (w) =>
@@ -135,8 +137,7 @@ export default class Feed extends React.Component {
 
                 snp.forEach(async (child) => {
                   const item = child.val();
-                  const name = shortHash(item.name);
-                  const path = `${FileSystem.cacheDirectory}items/${name}`;
+                  const path = `${FileSystem.cacheDirectory}items/${child.key}`;
                   const image = await FileSystem.getInfoAsync(path);
                   var uri;
                   if (image.exists) {
@@ -176,7 +177,6 @@ export default class Feed extends React.Component {
     this.fetchData();
     this.checkUserStatus();
   }
-  
 
   render() {
     return (

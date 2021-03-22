@@ -31,12 +31,15 @@ export default class Selling extends Component {
         var x = [];
         var y = [];
         snapshot.forEach((child) => {
-          if (child.val().buyerId === this.state.id) {
+          console.log(child.val().sellerId, this.state.id);
+          if (child.val().sellerId === this.state.id) {
+            console.log(child.val().sellerId, this.state.id);
             if (child.val().complete) {
               x.push({...child.val(), transID: child.key});
             } else {
               y.push({...child.val(), transID: child.key});
             }
+            console.log('xxwresse', x);
             this.setState({completeData: x});
             this.setState({pendingData: y});
           }
@@ -44,6 +47,7 @@ export default class Selling extends Component {
       });
   }
   Show(data) {
+    console.log(data);
     return (
       <FlatList
         data={data}
@@ -58,7 +62,9 @@ export default class Selling extends Component {
   }
 
   UNSAFE_componentWillMount() {
+    console.log(new Date().getTime());
     this.loadData();
+    console.log('pending: ', this.state.pendingData);
   }
   render() {
     return (
