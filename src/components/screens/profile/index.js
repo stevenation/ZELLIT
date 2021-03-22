@@ -33,8 +33,10 @@ export default class Profile extends Component {
             this.context.logout();
           }}>
           <Text>Log Out</Text>
+
+          <View style={{height: 50}}></View>
         </TouchableOpacity>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
           <TouchableOpacity
             onPress={() => {
               this.props.navigation.navigate('Buying');
