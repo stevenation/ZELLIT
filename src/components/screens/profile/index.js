@@ -12,12 +12,10 @@ import {COLORS} from '../../../constants';
 import {FlatGrid} from 'react-native-super-grid';
 import {Dimensions} from 'react-native';
 import {BackgroundImage} from 'react-native-elements/dist/config';
-import {DrawerActions} from '@react-navigation/routers';
 
 const WIDTH = Dimensions.get('screen').width;
 
 export default class Profile extends Component {
-  _isMounted = false;
   static contextType = AuthContext;
   constructor(props) {
     super(props);
@@ -26,35 +24,62 @@ export default class Profile extends Component {
       userData: '',
       img_url: '',
       itemsData: [],
+      rating_count: 0,
+      rating_total: 0,
     };
   }
 
   UNSAFE_componentWillMount() {
     database()
       .ref(`Users/${this.state.userId}`)
-      .once('value', async (snapshot) => {
+      .once('value')
+      .then(async (snapshot) => {
         this.Unsubscribe(snapshot.val().college);
-        this.setState({userData: snapshot.val()});
+        let data = snapshot.val();
+        this.setState({
+          userData: snapshot.val(),
+          rating_total: data.rating_total,
+          rating_count: data.rating_count,
+        });
+
         var url = await storage()
           .ref(`images/profile_pictures/${snapshot.val().profile_picture}`)
           .getDownloadURL();
         this.setState({img_url: url});
       });
+
+    this.getUpdates();
   }
   componentWillUnmount() {
-    this._isMounted = false;
     database()
       .ref(`${this.state.userData.college}/items`)
       .off('value', this.Unsubscribe);
+    database()
+      .ref(`Users/${this.state.userId}`)
+      .off('child_changed', this.getUpdates());
   }
-
+  getUpdates() {
+    database()
+      .ref(`Users/${this.state.userId}`)
+      .on('child_changed', (snapshot) => {
+        if (snapshot.key === 'rating_total') {
+          this.setState({rating_total: snapshot.val()});
+        }
+        if (snapshot.key === 'rating_count') {
+          this.setState({rating_count: snapshot.val()});
+        }
+        if (snapshot.key === 'trades') {
+          this.setState({trades: snapshot.val()});
+        }
+      });
+  }
   Unsubscribe(college) {
     database()
       .ref(`${college}/Items`)
-      .on('value', (snapshot) => {
+      .on('value', async (snapshot) => {
         var ls = [];
         snapshot.forEach((child) => {
-          if (child.val().iud === firebase.auth().currentUser.iud) {
+          if (child.val().uid === firebase.auth().currentUser.uid) {
             FastImage.preload([{uri: child.val().img_url}]);
             ls.push({...child.val(), key: child.val().key});
           }
@@ -95,7 +120,9 @@ export default class Profile extends Component {
                   type="star"
                   showRating={false}
                   fraction={5}
-                  defaultRating={this.state.userData.rating}
+                  defaultRating={
+                    this.state.rating_total / this.state.rating_count
+                  }
                   isDisabled={true}
                   size={20}
                 />
@@ -146,12 +173,13 @@ export default class Profile extends Component {
             </View>
           </View>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
+          styles={{width: 40}}
           onPress={() => {
             this.context.logout();
           }}>
           <Text>Log Out</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <FlatGrid
           style={{height: 430, marginTop: 25}}

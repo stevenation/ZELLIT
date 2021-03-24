@@ -9,6 +9,7 @@ import {styles} from '../profile/styles';
 import * as FileSystem from 'expo-file-system';
 import {Dimensions} from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
+import {Rating} from 'react-native-ratings';
 
 export default class SellTransactionScreen extends Component {
   _isMounted = true;
@@ -20,6 +21,8 @@ export default class SellTransactionScreen extends Component {
       showModal: false,
       id: props.route.params.data.transID,
       sellerInfo: null,
+      showRating: true,
+      rating: 0,
     };
   }
   UNSAFE_componentWillMount() {
@@ -28,12 +31,10 @@ export default class SellTransactionScreen extends Component {
       this.GetBuyerInfo();
     }
   }
-
-  UNSAFE_componentWillUpdate() {
+  Unsubscribe() {
     database()
       .ref(`transactions/${this.state.data.transID}`)
       .on('child_changed', (snapshot) => {
-        console.log('snapShot', snapshot.val());
         if (snapshot) {
           this._isMounted = true;
           if (this._isMounted) {
@@ -42,8 +43,21 @@ export default class SellTransactionScreen extends Component {
         }
       });
   }
+
+  UNSAFE_componentWillUpdate() {
+    this.Unsubscribe();
+    database()
+      .ref(`/Users/${this.state.data.buyerId}`)
+      .once('value', (snapshot) => {
+        this.setState({sellerInfo: snapshot.val()});
+      });
+  }
   componentWillUnmount() {
     this._isMounted = false;
+    this.state.showRating = false;
+    database()
+      .ref(`transactions/${this.state.data.transID}`)
+      .off('value', this.Unsubscribe);
   }
 
   ConfirmPayment() {
@@ -65,6 +79,62 @@ export default class SellTransactionScreen extends Component {
           style={styles.confirmStyle}
         />
       </>
+    );
+  }
+  ratingCompleted(rating) {
+    console.log('Rating is: ' + rating);
+    this.setState({rating: rating});
+  }
+  updateRating() {
+    console.log('userssssss', `/Users/${this.state.data.buyerId}`);
+    let total = this.state.sellerInfo.rating_total + this.state.rating;
+    let count = this.state.sellerInfo.rating_count + 1;
+    database().ref(`/Users/${this.state.data.buyerId}`).update({
+      rating_total: total,
+      rating_count: count,
+    });
+  }
+  showRating() {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.showRating}
+        onRequestClose={() => {
+          console.alert('Modal has been closed.');
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Rate your transaction with the buyer
+            </Text>
+            <Rating
+              fractions={1}
+              showRating={true}
+              startingValue={this.state.rating}
+              onFinishRating={(rating) => this.ratingCompleted(rating)}
+            />
+            <View style={{flexDirection: 'row'}}>
+              <TouchableHighlight
+                style={{...styles.openButton, backgroundColor: '#2196F3'}}
+                onPress={() => {
+                  this.updateRating();
+                  this.setState({showRating: false});
+                }}>
+                <Text style={styles.textStyle}>OK</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={{...styles.openButton, backgroundColor: '#2196F3'}}
+                onPress={() => {
+                  this.setState({rating: 0});
+                  this.setState({showRating: false});
+                }}>
+                <Text style={styles.textStyle}>Cancel</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </View>
+      </Modal>
     );
   }
   ShowModal() {
@@ -210,6 +280,7 @@ export default class SellTransactionScreen extends Component {
         </View>
         {this.state.data.paid && !this.state.data.complete && this.ShowButton()}
         {this.ShowModal()}
+        {this.showRating()}
       </SafeAreaView>
     );
   }

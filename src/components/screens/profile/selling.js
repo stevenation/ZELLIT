@@ -93,6 +93,7 @@ export default class Selling extends Component {
       />
     );
   }
+  
 
   UNSAFE_componentWillMount() {
     this.loadData();
