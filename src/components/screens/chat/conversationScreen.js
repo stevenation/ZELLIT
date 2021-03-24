@@ -18,7 +18,6 @@ export default function ConversationScreen(props, {navigation}) {
   const _id = userId;
   const dbRef = database().ref(`chatMessages/${users.id}`);
   const [user, setUser] = useState({_id});
-  const [name, setName] = useState('');
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -46,36 +45,24 @@ export default function ConversationScreen(props, {navigation}) {
           }
         }
       });
-    return () => unsubscribe();
+
+    return () => dbRef.off('value', unsubscribe);
   }, []);
 
-  async function handleSend(messages) {
-    const writes = messages.map((m) => {
+  async function handleSend(message) {
+    const writes = message.map((m) => {
       const time = database.ServerValue.TIMESTAMP;
       database()
         .ref(`chatMessages/${users.id}/${new Date().getTime()}`)
         .set({...m, createdAt: time, received: false, sent: true});
       database().ref(`chats/${users.id}`).set({
-        lastMessage: messages[0].text,
+        lastMessage: message[0].text,
         lastSent: time,
         users: users.users,
       });
     });
     await Promise.all(writes);
   }
-
-  const appendMessages = useCallback(
-    (messages) => {
-      try {
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, messages),
-        );
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    [messages],
-  );
 
   function openCamera() {
     ImageCropPicker.openCamera({
@@ -95,7 +82,6 @@ export default function ConversationScreen(props, {navigation}) {
           imgName += i;
         });
         console.log(image);
-        // storage().ref()
         let uri = image.path;
         let path = `images/chats/${imgName}`;
         await storage()
@@ -142,7 +128,6 @@ export default function ConversationScreen(props, {navigation}) {
     return (
       <Time
         {...props}
-        // position={"right"}
         timeTextStyle={{
           left: {
             color: COLORS.black,
@@ -175,14 +160,12 @@ export default function ConversationScreen(props, {navigation}) {
     if (key) {
       database()
         .ref(`chatMessages/${users.id}`)
-        // .child("1615756729620")
         .child(key)
         .update({received: true});
     }
   }
 
   return (
-    // <></>
     <GiftedChat
       messages={messages}
       user={user}

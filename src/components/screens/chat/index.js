@@ -1,13 +1,17 @@
 import React from 'react';
-import {FlatList, SafeAreaView} from 'react-native';
+import {FlatList, SafeAreaView, View} from 'react-native';
 import ChatCell from './chatCell';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
 import {COLORS} from '../../../constants';
-import * as FileSystem from 'expo-file-system';
 import storage from '@react-native-firebase/storage';
+import FastImage from 'react-native-fast-image';
+import {Text} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 export default class Chat extends React.Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -17,43 +21,30 @@ export default class Chat extends React.Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.unsubscribe();
-    this.cacheProfilePictures();
+    this._isMounted = true;
+    if (this._isMounted) {
+      this.unsubscribe();
+      this.cacheProfilePictures();
+    }
   }
-  componentDidMount() {
-    this.unsubscribe();
+
+  componentWillUnmount() {
+    database().ref(`chats`).off('value', this.unsubscribe);
   }
 
   async cacheProfilePictures() {
-    const folder_info = await FileSystem.getInfoAsync(
-      `${FileSystem.cacheDirectory}profileprictures`,
-    );
-    if (!folder_info.exists) {
-      try {
-        await FileSystem.makeDirectoryAsync(
-          `${FileSystem.cacheDirectory}profilepictures`,
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    const path = `${FileSystem.cacheDirectory}profilepictures/`;
     storage()
       .ref('images/profile_pictures')
       .list()
       .then((result) => {
         result.items.forEach(async (ref) => {
-          const image = await FileSystem.getInfoAsync(`${path}${ref.name}`);
-          if (!image.exists) {
-            ref.getDownloadURL().then(async (uri) => {
-              try {
-                await FileSystem.downloadAsync(uri, `${path}${ref.name}`);
-              } catch (error) {
-                console.log(error);
-              }
-            });
-          }
+          ref.getDownloadURL().then(async (uri) => {
+            try {
+              FastImage.preload([{uri: uri}]);
+            } catch (error) {
+              console.log(error);
+            }
+          });
         });
       });
   }
@@ -65,7 +56,6 @@ export default class Chat extends React.Component {
         var b = [];
         snapshot.forEach(async (child) => {
           const chat = {...child.val(), id: child.key};
-
           if (
             child.val().users.user1 === this.state.userId ||
             child.val().users.user2 === this.state.userId
@@ -76,20 +66,39 @@ export default class Chat extends React.Component {
         });
       });
   }
-
+  noChats() {
+    return (
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          alignSelf: 'center',
+          height: 400,
+        }}>
+        <AntDesign name={'wechat'} size={200} color={COLORS.blue} />
+        <Text style={{fontSize: 24, paddingTop: 20}}>No Chats</Text>
+      </View>
+    );
+  }
+  Chats() {
+    return (
+      <FlatList
+        data={this.state.chats}
+        renderItem={({item}) => (
+          <ChatCell
+            user={item}
+            height={103}
+            navigation={this.props.navigation}
+          />
+        )}
+      />
+    );
+  }
   render() {
     return (
       <SafeAreaView style={{backgroundColor: COLORS.white}}>
-        <FlatList
-          data={this.state.chats}
-          renderItem={({item}) => (
-            <ChatCell
-              user={item}
-              height={103}
-              navigation={this.props.navigation}
-            />
-          )}
-        />
+        {!this.state.chats.length ? this.noChats() : this.Chats()}
+        {/* {this.Chats()} */}
       </SafeAreaView>
     );
   }

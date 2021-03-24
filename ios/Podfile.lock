@@ -24,15 +24,15 @@ PODS:
     - React-Core (= 0.63.4)
     - React-jsi (= 0.63.4)
     - ReactCommon/turbomodule/core (= 0.63.4)
-  - Firebase/Auth (7.8.0):
+  - Firebase/Auth (7.8.1):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 7.8.0)
-  - Firebase/CoreOnly (7.8.0):
+  - Firebase/CoreOnly (7.8.1):
     - FirebaseCore (= 7.8.0)
-  - Firebase/Database (7.8.0):
+  - Firebase/Database (7.8.1):
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 7.8.0)
-  - Firebase/Storage (7.8.0):
+  - Firebase/Storage (7.8.1):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 7.8.0)
   - FirebaseAuth (7.8.0):
@@ -132,6 +132,15 @@ PODS:
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.5.0)
   - leveldb-library (1.22.1)
+  - libwebp (1.2.0):
+    - libwebp/demux (= 1.2.0)
+    - libwebp/mux (= 1.2.0)
+    - libwebp/webp (= 1.2.0)
+  - libwebp/demux (1.2.0):
+    - libwebp/webp
+  - libwebp/mux (1.2.0):
+    - libwebp/demux
+  - libwebp/webp (1.2.0)
   - nanopb (2.30907.0):
     - nanopb/decode (= 2.30907.0)
     - nanopb/encode (= 2.30907.0)
@@ -309,9 +318,9 @@ PODS:
   - React-jsinspector (0.63.4)
   - react-native-appearance (0.3.4):
     - React
-  - react-native-image-picker (3.2.1):
+  - react-native-image-picker (3.3.2):
     - React-Core
-  - react-native-image-resizer (1.4.3):
+  - react-native-image-resizer (1.4.4):
     - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
@@ -377,19 +386,23 @@ PODS:
     - React-jsi (= 0.63.4)
   - RNCMaskedView (0.1.10):
     - React
-  - RNFBApp (11.1.0):
-    - Firebase/CoreOnly (= 7.8.0)
+  - RNFastImage (8.3.4):
     - React-Core
-  - RNFBAuth (11.1.0):
-    - Firebase/Auth (= 7.8.0)
+    - SDWebImage (~> 5.8)
+    - SDWebImageWebPCoder (~> 0.6.1)
+  - RNFBApp (11.1.2):
+    - Firebase/CoreOnly (= 7.8.1)
+    - React-Core
+  - RNFBAuth (11.1.2):
+    - Firebase/Auth (= 7.8.1)
     - React-Core
     - RNFBApp
-  - RNFBDatabase (11.1.0):
-    - Firebase/Database (= 7.8.0)
+  - RNFBDatabase (11.1.2):
+    - Firebase/Database (= 7.8.1)
     - React-Core
     - RNFBApp
-  - RNFBStorage (11.1.0):
-    - Firebase/Storage (= 7.8.0)
+  - RNFBStorage (11.1.2):
+    - Firebase/Storage (= 7.8.1)
     - React-Core
     - RNFBApp
   - RNGestureHandler (1.10.3):
@@ -436,6 +449,12 @@ PODS:
     - React-Core
   - RNVectorIcons (8.1.0):
     - React-Core
+  - SDWebImage (5.10.4):
+    - SDWebImage/Core (= 5.10.4)
+  - SDWebImage/Core (5.10.4)
+  - SDWebImageWebPCoder (0.6.1):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.7)
   - TOCropViewController (2.6.0)
   - UMAppLoader (2.1.0)
   - UMBarCodeScannerInterface (6.1.0):
@@ -519,6 +538,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
+  - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database`)"
@@ -565,9 +585,12 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMSessionFetcher
     - leveldb-library
+    - libwebp
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
+    - SDWebImage
+    - SDWebImageWebPCoder
     - TOCropViewController
     - YogaKit
 
@@ -640,6 +663,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
+  RNFastImage:
+    :path: "../node_modules/react-native-fast-image"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -698,7 +723,7 @@ SPEC CHECKSUMS:
   EXPermissions: 694e23c048c816d15feef795f81b5443c6487be5
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
-  Firebase: 1e0d6610f21bdd131231525d7ee78f7f9e64e606
+  Firebase: d59ad4129167f9f0d2a4f6c1f0c462254b6002c8
   FirebaseAuth: 667e576a716f6f9fe31687791406f61135002d47
   FirebaseCore: 049029df3096e5c118917029be7da75ee16f3b1b
   FirebaseCoreDiagnostics: 066f996579cf097bdad3d7dc9a918d6b9e129c50
@@ -717,6 +742,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: e1d9ed4e544fc32a93e00e721400cbc3f377200d
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
+  libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
   OpenSSL-Universal: ff34003318d5e1163e9529b08470708e389ffcdd
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
@@ -731,8 +757,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-appearance: fc2014516054585d531e07aa0b40ab0de1d2be85
-  react-native-image-picker: 0c28bf3cb089cfe840bc5cc9fac3dcc10f2188d9
-  react-native-image-resizer: 2e41d4bcfc5ac4f4f8583688b835f68460ff9161
+  react-native-image-picker: 5b2f1ea1f9230b131abbfb8a4aa1eb209aba9ed9
+  react-native-image-resizer: b08cf4b346a7bbfe82eb7a535434c58969e729c7
   react-native-safe-area-context: e471852c5ed67eea4b10c5d9d43c1cebae3b231d
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
@@ -745,15 +771,18 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
-  RNFBApp: ac387b613260d2947f3eb954af5f291caaf85a65
-  RNFBAuth: 089b884677ed3ae4901f033c6b750e19ec6355ce
-  RNFBDatabase: 9fae54e7d3e133bf2cadee6d674f395d9772b4db
-  RNFBStorage: e14579800e0e32707b125d2b96a3cb6f3dbdcf6b
+  RNFastImage: d4870d58f5936111c56218dbd7fcfc18e65b58ff
+  RNFBApp: bb830cc7f7598e46437b833adc841df345e19e2f
+  RNFBAuth: d011f1b1a066a8bceba63c42369de9c5ce68de5e
+  RNFBDatabase: e8b27072d2aa305fea14e7478d8ba967b6042993
+  RNFBStorage: 301038338b021e19080338cfc89662c7e8ac117d
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNImageCropPicker: e641bf83ac47324994cac139bde74635ec52c17c
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
+  SDWebImage: c666b97e1fa9c64b4909816a903322018f0a9c84
+  SDWebImageWebPCoder: d0dac55073088d24b2ac1b191a71a8f8d0adac21
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   UMAppLoader: aae896b81e3fcaa6528992e2e19ec8db38c2cedd
   UMBarCodeScannerInterface: 96a01d81ff0c7febbfefc2d7396db9e7462d8c68

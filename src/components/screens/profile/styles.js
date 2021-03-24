@@ -99,4 +99,11 @@ export const styles = StyleSheet.create({
     elevation: 2,
     margin: 10,
   },
+  imageRectangular: {
+    borderRadius: 60,
+    height: 120,
+    width: 120,
+    backgroundColor: '#ddd',
+    margin: 10,
+  },
 });

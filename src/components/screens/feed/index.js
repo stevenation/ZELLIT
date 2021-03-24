@@ -15,8 +15,8 @@ import {COLORS} from '../../../constants';
 import ItemCell from './itemCell';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
-import * as FileSystem from 'expo-file-system';
-import shortHash from 'shorthash2';
+import storage from '@react-native-firebase/storage';
+import FastImage from 'react-native-fast-image';
 
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -60,6 +60,7 @@ export const categories = [
   },
 ];
 export default class Feed extends React.Component {
+  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -70,7 +71,6 @@ export default class Feed extends React.Component {
       title: '',
     };
   }
-
   checkUserStatus() {
     var userStatusDatabaseRef = database().ref('/status/' + this.state.userId);
     var isOfflineForDatabase = {
@@ -95,9 +95,6 @@ export default class Feed extends React.Component {
           });
       });
   }
-  //     useEffect(() => {
-  //     return () => checkUserStatus()
-  // }, [])
 
   capitalize(str) {
     return str.replace(/\w\S*/g, (w) =>
@@ -107,77 +104,113 @@ export default class Feed extends React.Component {
 
   onRefresh = () => {
     this.setState({refresh: true});
-    this.fetchData();
+    // this.fetchData();
+    var userId = firebase.auth().currentUser.uid;
+    userId == null
+      ? console.log('userID is empty')
+      : database()
+          .ref(`Users/${userId}`)
+          .once('value')
+          .then(async (snapshot) => {
+            this.setState({userData: snapshot.val()});
+            this.setState({title: this.capitalize(snapshot.val()['college'])});
+            await database()
+              .ref(`${snapshot.val().college}/Items`)
+              .once('value')
+              .then((snp) => {
+                if (snp) {
+                  database()
+                    .ref(`Users/${snp.val().uid}`)
+                    .once('value')
+                    .then((snap) => {
+                      storage()
+                        .ref(`/images/${snap.val().profile_picture}`)
+                        .getDownloadURL()
+                        .then(
+                          (url) => {
+                            FastImage.preload([{uri: url}]);
+                            var lst = this.state.itemsData;
+                            lst.push({
+                              ...snp.val(),
+                              key: snp.key,
+                              profile_picture_url: url,
+                            });
+                            this.setState({itemsData: lst});
+                          },
+                          (error) => {
+                            console.log(error);
+                          },
+                        );
+                    });
+                }
+              });
+          });
+
     wait(2000).then(() => this.setState({refresh: false}));
   };
 
   async fetchData() {
     var userId = firebase.auth().currentUser.uid;
-    const folder_info = await FileSystem.getInfoAsync(
-      `${FileSystem.cacheDirectory}items`,
-    );
-    if (!folder_info.exists) {
-      try {
-        FileSystem.makeDirectoryAsync(`${FileSystem.cacheDirectory}items`);
-      } catch (error) {
-        console.log(error);
-      }
-    }
     userId == null
       ? console.log('userID is empty')
       : database()
           .ref(`Users/${userId}`)
-          .on('value', async (snapshot) => {
+          .once('value')
+          .then(async (snapshot) => {
             this.setState({userData: snapshot.val()});
             this.setState({title: this.capitalize(snapshot.val()['college'])});
             await database()
-              .ref(`${snapshot.val()['college']}/Items`)
-              .on('value', (snp) => {
-                var lst = [];
-
+              .ref(`${snapshot.val().college}/Items`)
+              .once('value')
+              .then((snp) => {
                 snp.forEach(async (child) => {
-                  const item = child.val();
-                  const path = `${FileSystem.cacheDirectory}items/${child.key}`;
-                  const image = await FileSystem.getInfoAsync(path);
-                  var uri;
-                  if (image.exists) {
-                    uri = image.uri;
-                  } else {
-                    console.log('downloading');
-                    try {
-                      const newImage = await FileSystem.downloadAsync(
-                        item.img_url,
-                        path,
-                      );
-                      uri = newImage.uri;
-                    } catch (error) {
-                      console.log(error);
-                    }
+                  if (child.val().uid !== userId) {
+                    FastImage.preload([{uri: child.val().img_url}]);
+                    database()
+                      .ref(`Users/${child.val().uid}`)
+                      .once('value')
+                      .then((snap) => {
+                        storage()
+                          .ref(
+                            `/images/profile_pictures/${
+                              snap.val().profile_picture
+                            }`,
+                          )
+                          .getDownloadURL()
+                          .then(
+                            (url) => {
+                              FastImage.preload([{uri: url}]);
+
+                              var lst = this.state.itemsData;
+                              lst.push({
+                                ...child.val(),
+                                key: child.key,
+                                profile_picture_url: url,
+                              });
+                              this.setState({itemsData: lst});
+                            },
+                            (error) => {
+                              console.log(error);
+                            },
+                          );
+                      });
                   }
-                  await lst.push({
-                    key: child.key,
-                    path: uri,
-                    name: item.name,
-                    price: item.price,
-                    uid: item.uid,
-                    condition: item.condition,
-                    brand: item.brand,
-                    description: item.description,
-                    img_url: item.img_url,
-                    category: item.category,
-                    payment_method: item.payment_method,
-                  });
-                  this.setState({itemsData: lst});
                 });
               });
           });
   }
 
   UNSAFE_componentWillMount() {
-    this.fetchData();
-    this.checkUserStatus();
+    this._isMounted = true;
+    if (this._isMounted) {
+      this.fetchData();
+      this.checkUserStatus();
+    }
   }
 
+  componentWillUnmount() {
+    database().ref(`Users/${this.state.userId}`).off('value', this.fetchData);
+  }
   render() {
     return (
       <View>
@@ -229,16 +262,6 @@ export default class Feed extends React.Component {
                 onRefresh={this.onRefresh}
               />
             }>
-            {/*<View>*/}
-            {/*    <View style={styles.section}>*/}
-            {/*        <Text style={styles.sectionTitle}>Recent</Text>*/}
-            {/*    </View>*/}
-            {/*    <FlatList initialNumToRender={4} horizontal={true} data={this.state.itemsData} renderItem={({item}) => {*/}
-            {/*        return (*/}
-            {/*            <ItemCell itemData={item} navigation={this.props.navigation}/>*/}
-            {/*        )*/}
-            {/*    }}/>*/}
-            {/*</View>*/}
             <View>
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Electronics</Text>

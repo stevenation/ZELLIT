@@ -8,9 +8,10 @@ import {COLORS} from '../../../constants';
 import {styles} from '../profile/styles';
 import * as FileSystem from 'expo-file-system';
 import {Dimensions} from 'react-native';
-import { firebase } from '@react-native-firebase/auth';
+import {firebase} from '@react-native-firebase/auth';
 
 export default class BuyTransactionScreen extends Component {
+  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -22,7 +23,10 @@ export default class BuyTransactionScreen extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    this.GetSellerInfo();
+    this._isMounted = true;
+    if (this._isMounted) {
+      this.GetSellerInfo();
+    }
   }
 
   UNSAFE_componentWillUpdate() {
@@ -33,6 +37,9 @@ export default class BuyTransactionScreen extends Component {
           this.setState({data: {...this.state.data, paid: true}});
         }
       });
+  }
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   ShowButton() {

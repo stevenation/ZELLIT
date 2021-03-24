@@ -20,6 +20,7 @@ import {firebase} from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useHeaderHeight} from '@react-navigation/stack';
+import FastImage from 'react-native-fast-image';
 
 export default function ItemScreen(item) {
   const itemData = item.route.params.itemData;
@@ -29,7 +30,6 @@ export default function ItemScreen(item) {
   const [userName, setUserName] = useState('');
   const [likeColor, setLikeColor] = useState(COLORS.gray);
   const [sellerInfo, setSellerInfo] = useState('');
-  const [profilePictureUrl, setProfilePictureUrl] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [catModalVisible, setCatModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -75,23 +75,16 @@ export default function ItemScreen(item) {
   useEffect(() => {
     like === true ? setLikeColor(COLORS.orange) : setLikeColor(COLORS.gray);
     getBuyerName();
-    database()
+    const unsubscribe = database()
       .ref(`Users/${itemData.uid}`)
       .on('value', (snapshot) => {
-        setSellerInfo(snapshot.val());
-        storage()
-          .ref(`/images/${snapshot.val().profile_picture}`)
-          .getDownloadURL()
-          .then(
-            (url) => {
-              setProfilePictureUrl(url);
-            },
-            (error) => {
-              console.log(error);
-            },
-          );
+        if (snapshot) {
+          setSellerInfo(snapshot.val());
+        }
       });
-  }, [itemData.uid, like, profilePictureUrl]);
+    return () =>
+      database().ref(`/Users/${itemData.uid}`).off('value', unsubscribe);
+  }, [itemData.uid, like]);
 
   return (
     <SafeAreaView>
@@ -249,10 +242,13 @@ export default function ItemScreen(item) {
           showPagination
           data={['1']}
           renderItem={({item}) => (
-            <Image
+            <FastImage
               style={{height: 400, width: Dimensions.get('screen').width}}
-              resizeMode={'stretch'}
-              source={{uri: itemData.path ? itemData.path : null}}
+              source={{
+                uri: itemData.img_url,
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.stretch}
             />
           )}
         />
@@ -273,9 +269,12 @@ export default function ItemScreen(item) {
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <View
             style={{flexDirection: 'row', alignContent: 'center', padding: 10}}>
-            <Image
+            <FastImage
               style={styles.profileImage}
-              source={{uri: profilePictureUrl ? profilePictureUrl : null}}
+              source={{
+                uri: itemData.profile_picture_url,
+                priority: FastImage.priority.high,
+              }}
             />
             <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
               <Text style={styles.userName}>{sellerInfo.name}</Text>
@@ -338,6 +337,7 @@ export default function ItemScreen(item) {
                           user: {
                             ...sellerInfo,
                             id: id,
+                            img_url: itemData.profile_picture_url,
                             users: {user1: key1, user2: sellerInfo.uid},
                           },
                           height: height,

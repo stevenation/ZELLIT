@@ -5,6 +5,7 @@ import {styles} from './styles';
 import {Image} from 'react-native-elements';
 import {COLORS} from '../../../constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FastImage from 'react-native-fast-image';
 
 export default function ItemCell({itemData, navigation}) {
   const [like, setLike] = useState(false);
@@ -20,13 +21,16 @@ export default function ItemCell({itemData, navigation}) {
           onPress={() =>
             navigation.navigate('Listing Details', {itemData: itemData})
           }>
-          <Image
-            borderTopLeftRadius={25}
-            borderTopRightRadius={25}
-            resizeMode={'stretch'}
+          <FastImage
             style={styles.cellImage}
-            source={{uri: itemData.path ? itemData.path : null}}
+            source={{
+              uri: itemData.img_url,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.stretch}
           />
+        
+          
         </TouchableOpacity>
         <View style={styles.infoContainer}>
           <View>

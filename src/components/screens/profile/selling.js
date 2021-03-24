@@ -1,6 +1,8 @@
 import {firebase} from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import React, {Component, useState} from 'react';
+import {Dimensions} from 'react-native';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import {
   FlatList,
   SafeAreaView,
@@ -13,6 +15,8 @@ import {styles} from '../profile/styles';
 import TransactionCell from './transactionCell';
 
 export default class Selling extends Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -22,6 +26,38 @@ export default class Selling extends Component {
       completeData: [],
       id: firebase.auth().currentUser.uid,
     };
+  }
+
+  noItems(text) {
+    return (
+      <View
+        style={{
+          alignSelf: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: Dimensions.get('screen').width,
+          height: 400,
+          paddingTop: 5,
+        }}>
+        {this.state.pending ? (
+          <Fontisto
+            name={'shopify'}
+            size={190}
+            color={COLORS.blue}
+            style={{padding: 10}}
+          />
+        ) : (
+          <Fontisto
+            name={'money-symbol'}
+            size={200}
+            color={COLORS.blue}
+            style={{padding: 10}}
+          />
+        )}
+
+        <Text style={{fontSize: 24, paddingTop: 20}}>{text}</Text>
+      </View>
+    );
   }
 
   loadData() {
@@ -59,8 +95,10 @@ export default class Selling extends Component {
   }
 
   UNSAFE_componentWillMount() {
-    console.log(new Date().getTime());
     this.loadData();
+  }
+  componentWillUnmount() {
+    database().ref('transactions').off('value', this.loadData);
   }
   render() {
     return (
@@ -102,6 +140,12 @@ export default class Selling extends Component {
             </Text>
           </TouchableOpacity>
         </View>
+        {!this.state.pendingData.length &&
+          this.state.pending &&
+          this.noItems('No items pending')}
+        {!this.state.completeData.length &&
+          this.state.sold &&
+          this.noItems('No items sold')}
         {this.state.pending && this.Show(this.state.pendingData)}
         {this.state.sold && this.Show(this.state.completeData)}
       </SafeAreaView>

@@ -11,6 +11,9 @@ import {
 import {COLORS} from '../../../constants';
 import {styles} from '../profile/styles';
 import TransactionCell from './transactionCell';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Octicons from 'react-native-vector-icons/Octicons';
+import {Dimensions} from 'react-native';
 
 export default class Buying extends Component {
   constructor(props) {
@@ -44,6 +47,27 @@ export default class Buying extends Component {
       });
   }
 
+  noItems(text) {
+    return (
+      <View
+        style={{
+          alignSelf: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: Dimensions.get('screen').width,
+          height: 400,
+        }}>
+        {this.state.pending ? (
+          <FontAwesome name={'opencart'} size={200} color={COLORS.blue} />
+        ) : (
+          <Octicons name={'package'} size={200} color={COLORS.blue} />
+        )}
+
+        <Text style={{fontSize: 24, paddingTop: 20}}>{text}</Text>
+      </View>
+    );
+  }
+
   Show(data) {
     return (
       <FlatList
@@ -60,6 +84,10 @@ export default class Buying extends Component {
 
   UNSAFE_componentWillMount() {
     this.loadData();
+  }
+
+  componentWillUnmount() {
+    database().ref('transactions').off('value', this.loadData);
   }
   render() {
     return (
@@ -101,6 +129,20 @@ export default class Buying extends Component {
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* <Icon
+          reverse
+          name="opencart"
+          type="font-awesome"
+          color={COLORS.blue}
+          size={60}
+        /> */}
+        {!this.state.pendingData.length &&
+          this.state.pending &&
+          this.noItems('No items pending')}
+        {!this.state.completeData.length &&
+          this.state.bought &&
+          this.noItems('No items bought')}
         {this.state.pending && this.Show(this.state.pendingData)}
         {this.state.bought && this.Show(this.state.completeData)}
       </SafeAreaView>

@@ -3,6 +3,7 @@ import {Image, SafeAreaView, Text, View} from 'react-native';
 import {Button, Input} from 'react-native-elements';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
+import FastImage from 'react-native-fast-image';
 
 export default function Buy(item) {
   const itemData = item.route.params.itemsData;
@@ -82,10 +83,15 @@ export default function Buy(item) {
           justifyContent: 'space-evenly',
           padding: 10,
         }}>
-        <Image
+        <FastImage
           style={{height: 100, width: 100}}
-          source={{uri: itemData.path ? itemData.path : null}}
+          source={{
+            uri: itemData.img_url,
+            priority: FastImage.priority.normal,
+          }}
+          // resizeMode={FastImage.resizeMode.stretch}
         />
+
         <View>
           <Text style={{fontWeight: '700', fontSize: 20}}>
             {itemData.sellerName}

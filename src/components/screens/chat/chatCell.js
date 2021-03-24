@@ -3,18 +3,19 @@ import {Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import {styles} from './styles';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
-import * as FileSystem from 'expo-file-system';
+import storage from '@react-native-firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {COLORS} from '../../../constants';
+import FastImage from 'react-native-fast-image';
 
 export default function ChatCell({user, height, navigation}) {
   var user1;
   const [userName, setUserName] = useState('');
   const [imageProfile, setImageProfile] = useState('default');
+  const [imageName, setImageName] = useState('default.jpg');
   const userId = firebase.auth().currentUser.uid;
-  const path = `${FileSystem.cacheDirectory}profilepictures/`;
-  const lastSent = new Date(user.lastSent * 1000)
-    .toLocaleTimeString()
+  const lastSent = new Date(user.lastSent)
+    .toTimeString([], {hour: '2-digit', minute: '2-digit'})
     .slice(0, 5);
   if (user !== []) {
     user.users.user1 === userId
@@ -24,19 +25,19 @@ export default function ChatCell({user, height, navigation}) {
     console.log('emptyyyyyyy');
   }
   useEffect(() => {
-    async function getUserName() {
-      await database()
-        .ref(`Users/${user1}`)
-        .once('value')
-        .then((snapshot) => {
-          setUserName(snapshot.val().name);
-          if (typeof snapshot.val().profile_picture !== 'undefined') {
-            setImageProfile(snapshot.val().profile_picture);
-          }
-        });
-    }
-
-    getUserName();
+    const unsubscribe = database()
+      .ref(`Users/${user1}`)
+      .on('value', async (snapshot) => {
+        setUserName(snapshot.val().name);
+        setImageName(snapshot.val().profile_picture);
+        if (typeof snapshot.val().profile_picture !== 'undefined') {
+          var url = await storage()
+            .ref(`images/profile_pictures/${snapshot.val().profile_picture}`)
+            .getDownloadURL();
+          setImageProfile(url);
+        }
+      });
+    return () => database().ref(`Users/${user1}`).off('value', unsubscribe);
   }, []);
 
   function showUnread() {
@@ -58,14 +59,13 @@ export default function ChatCell({user, height, navigation}) {
             size={70}
             color={COLORS.lightGray}
           />
-          {/*<Image source={{uri:`${path}${imageProfile}`}} style={styles.profilePicture}/>*/}
         </View>
       );
     } else {
       return (
         <View style={styles.profileContainer}>
-          <Image
-            source={{uri: `${path}${imageProfile}`}}
+          <FastImage
+            source={{uri: imageProfile}}
             style={styles.profilePicture}
           />
         </View>
@@ -82,8 +82,8 @@ export default function ChatCell({user, height, navigation}) {
               ...user,
               name: userName,
               uid: user1,
-              profile: imageProfile,
-              path: `${path}${imageProfile}`,
+              profile: imageName,
+              img_url: imageProfile,
             },
             height: height,
           })

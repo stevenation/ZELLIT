@@ -7,6 +7,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {COLORS} from '../constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import database from '@react-native-firebase/database';
+import FastImage from 'react-native-fast-image';
 
 const Stack = createStackNavigator();
 
@@ -14,8 +15,8 @@ export function ChatScreen() {
   const [state, setState] = useState();
   const [date, setDate] = useState();
 
-  function showProfile(profile, path) {
-    if (profile === 'default') {
+  function showProfile(imgName, url) {
+    if (imgName === 'default.jpg') {
       return (
         <View style={{width: 50, height: 45}}>
           <Ionicons
@@ -28,8 +29,8 @@ export function ChatScreen() {
     } else {
       return (
         <View style={{width: 50, height: 45}}>
-          <Image
-            source={{uri: path}}
+          <FastImage
+            source={{uri: url}}
             style={{
               width: 45,
               height: 45,
@@ -102,7 +103,7 @@ export function ChatScreen() {
             headerTitle: () =>
               setStatus(route.params.user.name, route.params.user.uid),
             headerRight: () =>
-              showProfile(route.params.user.profile, route.params.user.path),
+              showProfile(route.params.user.profile, route.params.user.img_url),
             headerStyle: {
               height: route.params.height,
             },

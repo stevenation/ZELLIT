@@ -11,6 +11,8 @@ import {Dimensions} from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
 
 export default class SellTransactionScreen extends Component {
+  _isMounted = true;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -21,7 +23,10 @@ export default class SellTransactionScreen extends Component {
     };
   }
   UNSAFE_componentWillMount() {
-    this.GetBuyerInfo();
+    this._isMounted = true;
+    if (this._isMounted) {
+      this.GetBuyerInfo();
+    }
   }
 
   UNSAFE_componentWillUpdate() {
@@ -30,10 +35,17 @@ export default class SellTransactionScreen extends Component {
       .on('child_changed', (snapshot) => {
         console.log('snapShot', snapshot.val());
         if (snapshot) {
-          this.setState({data: {...this.state.data, complete: true}});
+          this._isMounted = true;
+          if (this._isMounted) {
+            this.setState({data: {...this.state.data, complete: true}});
+          }
         }
       });
   }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   ConfirmPayment() {
     database().ref(`transactions/${this.state.id}`).update({
       complete: true,
