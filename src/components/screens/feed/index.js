@@ -277,7 +277,6 @@ export default class Feed extends React.Component {
               </View>
 
               <FlatList
-                initialNumToRender={4}
                 horizontal={true}
                 data={this.state.itemsData}
                 renderItem={({item}) => {

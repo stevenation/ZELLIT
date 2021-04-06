@@ -6,14 +6,11 @@ import {SafeAreaView, Text} from 'react-native';
 import {Button} from 'react-native-elements';
 import {COLORS} from '../../../constants';
 import {styles} from '../profile/styles';
-import * as FileSystem from 'expo-file-system';
 import {Dimensions} from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
 import {Rating} from 'react-native-ratings';
 
 export default class SellTransactionScreen extends Component {
-  _isMounted = true;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -21,15 +18,12 @@ export default class SellTransactionScreen extends Component {
       showModal: false,
       id: props.route.params.data.transID,
       sellerInfo: null,
-      showRating: true,
+      showRating: false,
       rating: 0,
     };
   }
   UNSAFE_componentWillMount() {
-    this._isMounted = true;
-    if (this._isMounted) {
-      this.GetBuyerInfo();
-    }
+    this.GetBuyerInfo();
   }
   Unsubscribe() {
     database()
@@ -53,7 +47,6 @@ export default class SellTransactionScreen extends Component {
       });
   }
   componentWillUnmount() {
-    this._isMounted = false;
     this.state.showRating = false;
     database()
       .ref(`transactions/${this.state.data.transID}`)
@@ -82,11 +75,9 @@ export default class SellTransactionScreen extends Component {
     );
   }
   ratingCompleted(rating) {
-    console.log('Rating is: ' + rating);
     this.setState({rating: rating});
   }
   updateRating() {
-    console.log('userssssss', `/Users/${this.state.data.buyerId}`);
     let total = this.state.sellerInfo.rating_total + this.state.rating;
     let count = this.state.sellerInfo.rating_count + 1;
     database().ref(`/Users/${this.state.data.buyerId}`).update({
@@ -157,6 +148,13 @@ export default class SellTransactionScreen extends Component {
                 onPress={() => {
                   this.ConfirmPayment();
                   this.setState({showModal: false});
+                  if (
+                    this.state.data.paid &&
+                    this.state.data.complete &&
+                    !this.state.data.rated
+                  ) {
+                    this.setState({showRating: true});
+                  }
                 }}>
                 <Text style={styles.textStyle}>OK</Text>
               </TouchableHighlight>
@@ -190,7 +188,7 @@ export default class SellTransactionScreen extends Component {
         <Image
           style={{width: Dimensions.get('screen').width, height: 100}}
           source={{
-            uri: `${FileSystem.cacheDirectory}items/${this.state.data.transID}`,
+            uri: this.state.data.img_url,
           }}
         />
         <View
@@ -241,7 +239,6 @@ export default class SellTransactionScreen extends Component {
             onPress={async () => {
               const key1 = firebase.auth().currentUser.uid;
               const key2 = this.state.buyerInfo.uid;
-              // console.log(sellerInfo);
               var id;
 
               const key1_key2 = await database()
@@ -280,6 +277,7 @@ export default class SellTransactionScreen extends Component {
         </View>
         {this.state.data.paid && !this.state.data.complete && this.ShowButton()}
         {this.ShowModal()}
+
         {this.showRating()}
       </SafeAreaView>
     );

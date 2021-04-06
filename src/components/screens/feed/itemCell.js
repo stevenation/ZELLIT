@@ -6,14 +6,43 @@ import {Image} from 'react-native-elements';
 import {COLORS} from '../../../constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
+import database from '@react-native-firebase/database';
+import {firebase} from '@react-native-firebase/auth';
 
 export default function ItemCell({itemData, navigation}) {
-  const [like, setLike] = useState(false);
+  const userId = firebase.auth().currentUser.uid;
+  const [like, setLike] = useState(null);
   const [likeColor, setLikeColor] = useState(COLORS.gray);
 
+  const updateWishList = (state) => {
+    if (state) {
+      database().ref(`wishlist/${itemData.key}/${userId}`).set({like: true});
+    } else {
+      database().ref(`wishlist/${itemData.key}/${userId}`).set({like: false});
+    }
+  };
+
   useEffect(() => {
-    like ? setLikeColor(COLORS.orange) : setLikeColor(COLORS.gray);
-  }, []);
+    const unsubscribe = () =>
+      database()
+        .ref(`wishlist/${itemData.key}/${userId}`)
+        .on('value', (snp) => {
+          console.log(typeof snp);
+          if (snp.val() !== null) {
+            setLike(snp.val().like);
+            snp.val().like
+              ? setLikeColor(COLORS.orange)
+              : setLikeColor(COLORS.gray);
+          } else {
+            setLikeColor(COLORS.gray);
+          }
+        });
+
+    unsubscribe();
+
+    return () => database().ref(`wishlist/${itemData.key}/${userId}`).off();
+  }, [itemData.key, like, userId]);
+
   return (
     <View style={styles.cellContainer}>
       <Shadow style={styles.cell}>
@@ -29,8 +58,6 @@ export default function ItemCell({itemData, navigation}) {
             }}
             resizeMode={FastImage.resizeMode.stretch}
           />
-        
-          
         </TouchableOpacity>
         <View style={styles.infoContainer}>
           <View>
@@ -39,7 +66,7 @@ export default function ItemCell({itemData, navigation}) {
           </View>
           <TouchableOpacity
             onPress={() => {
-              setLike(!like);
+              updateWishList(!like);
             }}>
             <MaterialCommunityIcons
               name={'heart'}

@@ -15,8 +15,6 @@ import {styles} from '../profile/styles';
 import TransactionCell from './transactionCell';
 
 export default class Selling extends Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -66,12 +64,27 @@ export default class Selling extends Component {
       .on('value', (snapshot) => {
         var x = [];
         var y = [];
-        snapshot.forEach((child) => {
+        snapshot.forEach(async (child) => {
+          var college = await database()
+            .ref(`Users/${child.val().buyerId}/college`)
+            .once('value');
+          var img_url = await database()
+            .ref(`${college.val()}/Items/${child.val().id}/img_url`)
+            .once('value');
+
           if (child.val().sellerId === this.state.id) {
             if (child.val().complete) {
-              x.push({...child.val(), transID: child.key});
+              x.push({
+                ...child.val(),
+                transID: child.key,
+                img_url: img_url.val(),
+              });
             } else {
-              y.push({...child.val(), transID: child.key});
+              y.push({
+                ...child.val(),
+                transID: child.key,
+                img_url: img_url.val(),
+              });
             }
             this.setState({completeData: x});
             this.setState({pendingData: y});
@@ -80,7 +93,6 @@ export default class Selling extends Component {
       });
   }
   Show(data) {
-    console.log(data);
     return (
       <FlatList
         data={data}
@@ -93,7 +105,6 @@ export default class Selling extends Component {
       />
     );
   }
-  
 
   UNSAFE_componentWillMount() {
     this.loadData();

@@ -106,4 +106,19 @@ export const styles = StyleSheet.create({
     backgroundColor: '#ddd',
     margin: 10,
   },
+  collegeText: {
+    color: COLORS.white,
+    fontWeight: '500',
+    fontSize: 14,
+  },
+  transactionButtons: {
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    margin: 5,
+    borderRadius: 15,
+    borderColor: COLORS.white,
+    backgroundColor: COLORS.white,
+  },
 });

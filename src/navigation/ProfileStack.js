@@ -8,6 +8,7 @@ import SellTransactionScreen from '../components/screens/profile/sellTransaction
 import Selling from '../components/screens/profile/selling';
 import CachedImageExample from '../components/screens/profile/cacheImageTest';
 import {COLORS} from '../constants';
+import EditProfile from '../components/screens/profile/editProfile';
 
 const Stack = createStackNavigator();
 
@@ -62,6 +63,15 @@ export function ProfileScreen() {
           headerShown: true,
           headerBackTitle: ' ',
           headerTitle: 'Selling',
+        }}
+      />
+      <Stack.Screen
+        name={'EditProfile'}
+        component={EditProfile}
+        options={{
+          headerShown: true,
+          headerBackTitle: ' ',
+          headerTitle: 'Edit Profile',
         }}
       />
     </Stack.Navigator>

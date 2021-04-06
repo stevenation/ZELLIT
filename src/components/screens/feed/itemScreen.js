@@ -24,9 +24,9 @@ import FastImage from 'react-native-fast-image';
 
 export default function ItemScreen(item) {
   const itemData = item.route.params.itemData;
-
+  const userId = firebase.auth().currentUser.uid;
   const height = useHeaderHeight() + 13;
-  const [like, setLike] = useState(false);
+  const [like, setLike] = useState(null);
   const [userName, setUserName] = useState('');
   const [likeColor, setLikeColor] = useState(COLORS.gray);
   const [sellerInfo, setSellerInfo] = useState('');
@@ -72,19 +72,44 @@ export default function ItemScreen(item) {
     database().ref(`ReportedItems/${cat}/${itemData.key}`).set(date.toString());
   }
 
+  const updateWishList = (state) => {
+    if (state) {
+      database().ref(`wishlist/${itemData.key}/${userId}`).set({like: true});
+    } else {
+      database().ref(`wishlist/${itemData.key}/${userId}`).set({like: false});
+    }
+  };
+
   useEffect(() => {
-    like === true ? setLikeColor(COLORS.orange) : setLikeColor(COLORS.gray);
     getBuyerName();
-    const unsubscribe = database()
-      .ref(`Users/${itemData.uid}`)
-      .on('value', (snapshot) => {
-        if (snapshot) {
-          setSellerInfo(snapshot.val());
-        }
-      });
-    return () =>
-      database().ref(`/Users/${itemData.uid}`).off('value', unsubscribe);
-  }, [itemData.uid, like]);
+    console.log(itemData.key);
+
+    const getWishListUpdate = () =>
+      database()
+        .ref(`wishlist/${itemData.key}/${userId}`)
+        .on('value', (snp) => {
+          setLike(snp.val().like);
+          snp.val().like
+            ? setLikeColor(COLORS.orange)
+            : setLikeColor(COLORS.gray);
+        });
+
+    const unsubscribe = () =>
+      database()
+        .ref(`Users/${itemData.uid}`)
+        .on('value', (snapshot) => {
+          if (snapshot) {
+            setSellerInfo(snapshot.val());
+          }
+        });
+    getWishListUpdate();
+
+    unsubscribe();
+    return () => {
+      database().ref(`wishlist/${itemData.key}/${userId}`).off();
+      database().ref(`/Users/${itemData.uid}`).off();
+    };
+  }, [itemData.key, itemData.uid, like, userId]);
 
   return (
     <SafeAreaView>
@@ -361,7 +386,7 @@ export default function ItemScreen(item) {
             <Text style={{fontSize: 18}}>{itemData.payment_method}</Text>
             <TouchableOpacity
               onPress={() => {
-                setLike(!like);
+                updateWishList(!like);
               }}>
               <AntDesign
                 name={'heart'}

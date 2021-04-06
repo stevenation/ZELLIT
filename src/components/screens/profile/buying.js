@@ -33,13 +33,28 @@ export default class Buying extends Component {
       .on('value', (snapshot) => {
         var x = [];
         var y = [];
-        snapshot.forEach((child) => {
+        snapshot.forEach(async (child) => {
+          var college = await database()
+            .ref(`Users/${child.val().sellerId}/college`)
+            .once('value');
+          var img_url = await database()
+            .ref(`${college.val()}/Items/${child.val().id}/img_url`)
+            .once('value');
           if (child.val().buyerId === this.state.id) {
             if (child.val().complete) {
-              x.push({...child.val(), transID: child.key});
+              x.push({
+                ...child.val(),
+                transID: child.key,
+                img_url: img_url.val(),
+              });
             } else {
-              y.push({...child.val(), transID: child.key});
+              y.push({
+                ...child.val(),
+                transID: child.key,
+                img_url: img_url.val(),
+              });
             }
+            console.log(img_url.val());
             this.setState({completeData: x});
             this.setState({pendingData: y});
           }

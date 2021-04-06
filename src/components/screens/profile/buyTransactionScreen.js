@@ -9,9 +9,9 @@ import {styles} from '../profile/styles';
 import * as FileSystem from 'expo-file-system';
 import {Dimensions} from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
+import FastImage from 'react-native-fast-image';
 
 export default class BuyTransactionScreen extends Component {
-  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -130,10 +130,10 @@ export default class BuyTransactionScreen extends Component {
   render() {
     return (
       <SafeAreaView>
-        <Image
+        <FastImage
           style={{width: Dimensions.get('screen').width, height: 100}}
           source={{
-            uri: `${FileSystem.cacheDirectory}items/${this.state.data.transID}`,
+            uri: this.state.data.img_url,
           }}
         />
         <View

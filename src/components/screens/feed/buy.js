@@ -117,10 +117,6 @@ export default function Buy(item) {
 
       <Button
         onPress={() => {
-          console.log(
-            item.route.params.sellerInfo.uid,
-            firebase.auth().currentUser.uid,
-          );
           if (
             item.route.params.sellerInfo.uid !== firebase.auth().currentUser.uid
           ) {
