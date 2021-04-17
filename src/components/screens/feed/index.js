@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {LogBox} from 'react-native';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {styles} from './styles';
 import {COLORS} from '../../../constants';
@@ -18,6 +20,7 @@ import {firebase} from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import FastImage from 'react-native-fast-image';
 
+// LogBox.ignoreAllLogs();
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
@@ -102,52 +105,58 @@ export default class Feed extends React.Component {
     );
   }
 
-  onRefresh = () => {
-    this.setState({refresh: true});
-    // this.fetchData();
-    var userId = firebase.auth().currentUser.uid;
-    userId == null
-      ? console.log('userID is empty')
-      : database()
-          .ref(`Users/${userId}`)
-          .once('value')
-          .then(async (snapshot) => {
-            this.setState({userData: snapshot.val()});
-            this.setState({title: this.capitalize(snapshot.val()['college'])});
-            await database()
-              .ref(`${snapshot.val().college}/Items`)
-              .once('value')
-              .then((snp) => {
-                if (snp) {
-                  database()
-                    .ref(`Users/${snp.val().uid}`)
-                    .once('value')
-                    .then((snap) => {
-                      storage()
-                        .ref(`/images/${snap.val().profile_picture}`)
-                        .getDownloadURL()
-                        .then(
-                          (url) => {
-                            FastImage.preload([{uri: url}]);
-                            var lst = this.state.itemsData;
-                            lst.push({
-                              ...snp.val(),
-                              key: snp.key,
-                              profile_picture_url: url,
-                            });
-                            this.setState({itemsData: lst});
-                          },
-                          (error) => {
-                            console.log(error);
-                          },
-                        );
-                    });
-                }
-              });
-          });
+  // onRefresh = () => {
+  //   this.setState({refresh: true});
+  //   // this.fetchData();
+  //   var userId = firebase.auth().currentUser.uid;
+  //   userId == null
+  //     ? console.log('userID is empty')
+  //     : database()
+  //         .ref(`Users/${userId}`)
+  //         .once('value')
+  //         .then(async (snapshot) => {
+  //           console.log(this.state.userID, snapshot.val());
+  //           this.setState({userData: snapshot.val()});
+  //           this.setState({title: this.capitalize(snapshot.val()['college'])});
+  //           await database()
+  //             .ref(`${snapshot.val().college}/Items`)
+  //             .once('value')
+  //             .then((snp) => {
+  //               if (snp) {
+  //                 database()
+  //                   .ref(`Users/${snp.val().uid}`)
+  //                   .once('value')
+  //                   .then((snap) => {
+  //                     console.log('pp', snap.val());
+  //                     storage()
+  //                       .ref(
+  //                         `/images/profile_pictures/${
+  //                           snap.val().profile_picture
+  //                         }`,
+  //                       )
+  //                       .getDownloadURL()
+  //                       .then(
+  //                         (url) => {
+  //                           FastImage.preload([{uri: url}]);
+  //                           var lst = this.state.itemsData;
+  //                           lst.push({
+  //                             ...snp.val(),
+  //                             key: snp.key,
+  //                             profile_picture_url: url,
+  //                           });
+  //                           this.setState({itemsData: lst});
+  //                         },
+  //                         (error) => {
+  //                           console.log(error);
+  //                         },
+  //                       );
+  //                   });
+  //               }
+  //             });
+  //         });
 
-    wait(2000).then(() => this.setState({refresh: false}));
-  };
+  //   wait(2000).then(() => this.setState({refresh: false}));
+  // };
 
   async fetchData() {
     var userId = firebase.auth().currentUser.uid;
@@ -157,15 +166,19 @@ export default class Feed extends React.Component {
           .ref(`Users/${userId}`)
           .once('value')
           .then(async (snapshot) => {
+            console.log(snapshot.val());
             this.setState({userData: snapshot.val()});
             this.setState({title: this.capitalize(snapshot.val()['college'])});
             await database()
               .ref(`${snapshot.val().college}/Items`)
+              .orderByValue()
               .once('value')
               .then((snp) => {
                 snp.forEach(async (child) => {
                   if (child.val().uid !== userId) {
-                    FastImage.preload([{uri: child.val().img_url}]);
+                    if (child.val().img_url) {
+                      FastImage.preload([{uri: child.val().img_url}]);
+                    }
                     database()
                       .ref(`Users/${child.val().uid}`)
                       .once('value')

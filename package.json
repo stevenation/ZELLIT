@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --verbose --simulator='iPhone 11 Pro' ",
+    "ios": "react-native run-ios --verbose --simulator='iPhone 11' ",
     "start": "react-native start --verbose",
     "pod-ios": "cd ios; pod install; cd ..; react-native run-ios ",
     "test": "jest",

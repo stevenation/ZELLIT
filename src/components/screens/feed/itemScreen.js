@@ -8,6 +8,7 @@ import {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  StyleSheet,
   View,
 } from 'react-native';
 import {COLORS} from '../../../constants';
@@ -21,6 +22,8 @@ import storage from '@react-native-firebase/storage';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useHeaderHeight} from '@react-navigation/stack';
 import FastImage from 'react-native-fast-image';
+import {showDate} from '../profile';
+const WIDTH = Dimensions.get('screen').width;
 
 export default function ItemScreen(item) {
   const itemData = item.route.params.itemData;
@@ -33,6 +36,7 @@ export default function ItemScreen(item) {
   const [modalVisible, setModalVisible] = useState(false);
   const [catModalVisible, setCatModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [wishListModal, setWishListModal] = useState(false);
   const categories = [
     'fraud',
     'illegal_items',
@@ -116,6 +120,46 @@ export default function ItemScreen(item) {
       <View>
         <View>
           <Modal
+            // style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}
+            animationType="slide"
+            transparent={true}
+            visible={wishListModal}
+            onRequestClose={() => {
+              // this.closeButtonFunction()
+            }}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+
+                height: 100,
+                width: WIDTH,
+              }}>
+              <View
+                style={{
+                  height: 50,
+                  width: WIDTH,
+                  backgroundColor: COLORS.blue,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                {like && (
+                  <Text style={{color: COLORS.white, fontWeight: '500'}}>
+                    Item Saved To WishList
+                  </Text>
+                )}
+                {!like && (
+                  <Text style={{color: COLORS.white, fontWeight: '500'}}>
+                    Item Removed From Wishlist
+                  </Text>
+                )}
+              </View>
+            </View>
+          </Modal>
+        </View>
+        <View>
+          <Modal
             animationType="slide"
             transparent={true}
             visible={modalVisible}
@@ -127,7 +171,7 @@ export default function ItemScreen(item) {
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: 22,
+                // marginTop: 22,
               }}>
               <View
                 style={{
@@ -287,7 +331,9 @@ export default function ItemScreen(item) {
             <Text style={styles.itemNameIS}>{itemData.name}</Text>
           </View>
           <View>
-            <Text style={styles.postDate}>Posted Today</Text>
+            <Text style={styles.postDate}>
+              Posted {showDate(itemData.timestamp)}
+            </Text>
           </View>
         </View>
 
@@ -302,7 +348,15 @@ export default function ItemScreen(item) {
               }}
             />
             <View style={{justifyContent: 'center', paddingHorizontal: 10}}>
-              <Text style={styles.userName}>{sellerInfo.name}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  item.navigation.navigate('ShowProfile', {
+                    userData: {...sellerInfo, itemData},
+                  });
+                }}>
+                <Text style={styles.userName}>{sellerInfo.name}</Text>
+              </TouchableOpacity>
+
               <View style={{flexDirection: 'row', paddingVertical: 2}}>
                 <AntDesign name={'star'} color={COLORS.orange} />
                 <AntDesign name={'star'} color={COLORS.orange} />
@@ -387,6 +441,8 @@ export default function ItemScreen(item) {
             <TouchableOpacity
               onPress={() => {
                 updateWishList(!like);
+                setWishListModal(true);
+                setTimeout(() => setWishListModal(false), 2000);
               }}>
               <AntDesign
                 name={'heart'}
@@ -416,6 +472,89 @@ export default function ItemScreen(item) {
         </View>
         <View style={{height: 50}} />
       </ScrollView>
+      <Modal
+        style={{justifyContent: 'flex-end', margin: 0}}
+        animationType="slide"
+        transparent={true}
+        visible={false}
+        onRequestClose={() => {
+          console.alert('Modal has been closed.');
+        }}>
+        <View
+          style={{
+            flex: 0.5,
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+            borderRadius: 34,
+            margin: 10,
+
+            width: 100,
+            alignSelf: 'center',
+            backgroundColor: COLORS.white,
+            marginBottom: 30,
+          }}>
+          {like && <Text>Item Saved WishList</Text>}
+          {!like && <Text>Item Has Been Removed From the Wishlist</Text>}
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
+const styles1 = StyleSheet.create({
+  container: {
+    flex: 0.2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 34,
+    margin: 10,
+    width: WIDTH - 40,
+    alignSelf: 'center',
+    backgroundColor: COLORS.white,
+    marginBottom: 30,
+  },
+
+  cancelButton: {
+    backgroundColor: COLORS.blue,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    width: WIDTH - 40,
+    borderRadius: 10,
+    marginTop: 5,
+  },
+  cancelButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  rowItem: {
+    backgroundColor: '#ddd',
+    width: WIDTH - 40,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowText: {
+    fontSize: 18,
+  },
+  profileContainer: {
+    width: 100,
+    height: 120,
+    alignSelf: 'center',
+  },
+  editText: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
+    alignSelf: 'flex-end',
+    height: 40,
+  },
+  dataContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignContent: 'center',
+  },
+});

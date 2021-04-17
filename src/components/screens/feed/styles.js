@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
 import {COLORS} from '../../../constants';
 
 export const styles = StyleSheet.create({
@@ -133,5 +133,25 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  imageRectangular: {
+    borderRadius: 60,
+    height: 120,
+    width: 120,
+    backgroundColor: '#ddd',
+    margin: 10,
+  },
+  cell1: {
+    alignSelf: 'center',
+    // borderRadius: 10,
+    shadowOpacity: 0.3,
+    shadowColor: COLORS.black,
+    // shadowRadius: 10,
+    backgroundColor: COLORS.white,
+
+    width: Dimensions.get('screen').width,
+    height: 80,
+    paddingHorizontal: 5,
+    marginVertical: 1,
   },
 });

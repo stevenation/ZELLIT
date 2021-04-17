@@ -1,35 +1,30 @@
 import React, {useContext, useState} from 'react';
-import {AuthContext} from "../../../navigation/AuthProvider";
+import {AuthContext} from '../../../navigation/AuthProvider';
 import {
   SafeAreaView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
-    Image
+  Image,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Input} from 'react-native-elements';
 import {styles} from './styles';
 import {COLORS} from '../../../constants';
 import {Shadow} from 'react-native-neomorph-shadows';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SignIn({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {login} = useContext(AuthContext)
+  const {login} = useContext(AuthContext);
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} />
       <SafeAreaView>
         <View style={styles.logoContainer}>
-          {/*<MaterialCommunityIcons*/}
-          {/*  name={'music-note-whole-dotted'}*/}
-          {/*  size={170}*/}
-          {/*  style={{color: COLORS.blue}}*/}
-          {/*/>*/}
-          <Image style={styles.logo} source={require("./logo.png")} />
+          <Image style={styles.logo} source={require('./logo.png')} />
         </View>
         <View style={styles.inputContainer}>
           <Input
@@ -79,7 +74,10 @@ export default function SignIn({navigation}) {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
-              login(email, password);
+              var e = login(email, password);
+              if (e) {
+                console.log('e', e);
+              }
             }}>
             <Shadow style={styles.buttons}>
               <Text style={styles.buttonText}>LOGIN</Text>

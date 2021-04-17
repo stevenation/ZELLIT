@@ -1,6 +1,8 @@
 import React, {createContext, useState} from 'react';
 import auth, {firebase} from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
+import {Text} from 'react-native';
+import {set} from 'react-native-reanimated';
 
 export const AuthContext = createContext({});
 export const AuthProvider = ({children}) => {
@@ -15,6 +17,7 @@ export const AuthProvider = ({children}) => {
             await auth().signInWithEmailAndPassword(email, password);
           } catch (e) {
             console.log(e);
+            return e;
           }
         },
         register: async (name, email, password, college) => {
@@ -30,7 +33,7 @@ export const AuthProvider = ({children}) => {
                 email: email,
                 college: college,
               })
-              .then(() => console.log('Data updated.'));
+              .then(() => setTimeout(console.log('Data updated.'), 5000));
           } catch (e) {
             console.log(e);
           }

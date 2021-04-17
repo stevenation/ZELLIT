@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View, Modal, Dimensions} from 'react-native';
 import {Shadow} from 'react-native-neomorph-shadows';
 import {styles} from './styles';
-import {Image} from 'react-native-elements';
 import {COLORS} from '../../../constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
@@ -13,6 +12,8 @@ export default function ItemCell({itemData, navigation}) {
   const userId = firebase.auth().currentUser.uid;
   const [like, setLike] = useState(null);
   const [likeColor, setLikeColor] = useState(COLORS.gray);
+  const [wishListModal, setWishListModal] = useState(false);
+  const WIDTH = Dimensions.get('screen').width;
 
   const updateWishList = (state) => {
     if (state) {
@@ -27,7 +28,6 @@ export default function ItemCell({itemData, navigation}) {
       database()
         .ref(`wishlist/${itemData.key}/${userId}`)
         .on('value', (snp) => {
-          console.log(typeof snp);
           if (snp.val() !== null) {
             setLike(snp.val().like);
             snp.val().like
@@ -45,6 +45,41 @@ export default function ItemCell({itemData, navigation}) {
 
   return (
     <View style={styles.cellContainer}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={wishListModal}
+        onRequestClose={() => {}}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+
+            height: 100,
+            width: WIDTH,
+          }}>
+          <View
+            style={{
+              height: 50,
+              width: WIDTH,
+              backgroundColor: COLORS.blue,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            {like && (
+              <Text style={{color: COLORS.white, fontWeight: '500'}}>
+                Item Saved To WishList
+              </Text>
+            )}
+            {!like && (
+              <Text style={{color: COLORS.white, fontWeight: '500'}}>
+                Item Removed From Wishlist
+              </Text>
+            )}
+          </View>
+        </View>
+      </Modal>
       <Shadow style={styles.cell}>
         <TouchableOpacity
           onPress={() =>
@@ -67,6 +102,8 @@ export default function ItemCell({itemData, navigation}) {
           <TouchableOpacity
             onPress={() => {
               updateWishList(!like);
+              setWishListModal(true);
+              setTimeout(() => setWishListModal(false), 2000);
             }}>
             <MaterialCommunityIcons
               name={'heart'}

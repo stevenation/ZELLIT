@@ -5,14 +5,15 @@ import {COLORS} from '../../../constants';
 export const styles = StyleSheet.create({
   cell: {
     alignSelf: 'center',
-    borderRadius: 10,
+    // borderRadius: 10,
     shadowOpacity: 0.3,
     shadowColor: COLORS.black,
-    shadowRadius: 10,
+    // shadowRadius: 10,
     backgroundColor: COLORS.white,
     width: Dimensions.get('screen').width,
-    height: 100,
+    height: 80,
     paddingHorizontal: 5,
+    // marginVertical: 1,
   },
   sellerName: {
     fontWeight: '700',
