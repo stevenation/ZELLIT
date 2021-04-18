@@ -1,8 +1,7 @@
 import React, {createContext, useState} from 'react';
 import auth, {firebase} from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
-import {Text} from 'react-native';
-import {set} from 'react-native-reanimated';
+import storage from '@react-native-firebase/storage';
 
 export const AuthContext = createContext({});
 export const AuthProvider = ({children}) => {
@@ -25,6 +24,9 @@ export const AuthProvider = ({children}) => {
             await auth().createUserWithEmailAndPassword(email, password);
             await auth().signInWithEmailAndPassword(email, password);
             const userId = firebase.auth().currentUser.uid;
+            const url = await storage()
+              .ref('images/profile_pictures/default.png')
+              .getDownloadURL();
             database()
               .ref(`Users/${userId}`)
               .set({
@@ -32,8 +34,13 @@ export const AuthProvider = ({children}) => {
                 uid: userId,
                 email: email,
                 college: college,
+                profile_picture: 'default.png',
+                trades: 0,
+                rating_count: 0,
+                rating_total: 0,
+                url: url,
               })
-              .then(() => setTimeout(console.log('Data updated.'), 5000));
+              .then(() => console.log('Data updated.'));
           } catch (e) {
             console.log(e);
           }

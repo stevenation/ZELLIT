@@ -9,6 +9,8 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
+import {LogBox} from 'react-native';
+
 import {Switch} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {AuthContext} from '../../../navigation/AuthProvider';
@@ -31,7 +33,6 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {FlatList} from 'react-native';
-import {TextInput} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import {Platform} from 'react-native';
@@ -40,6 +41,7 @@ import {Button as Button1} from 'react-native-elements';
 import {Image} from 'react-native';
 
 const WIDTH = Dimensions.get('screen').width;
+LogBox.ignoreAllLogs();
 
 export default class Profile extends Component {
   static contextType = AuthContext;
@@ -64,6 +66,10 @@ export default class Profile extends Component {
       upLoadUri: '',
       categories: [
         {
+          label: 'Textbooks',
+          value: 'textbooks',
+        },
+        {
           label: 'School',
           value: 'school',
         },
@@ -86,6 +92,38 @@ export default class Profile extends Component {
         {
           label: 'Other',
           value: 'other',
+        },
+        {
+          label: 'Stationery',
+          value: 'stationery',
+        },
+      ],
+
+      conditions: [
+        {
+          id: '1',
+          title: 'New',
+          description: 'With tags, unopened',
+        },
+        {
+          id: '2',
+          title: 'Like New',
+          description: 'New without tags, unused',
+        },
+        {
+          id: '3',
+          title: 'Good',
+          description: 'Used, minor flaws',
+        },
+        {
+          id: '4',
+          title: 'Fair',
+          description: 'Gently used',
+        },
+        {
+          id: '5',
+          title: 'Poor',
+          description: 'Major flaws',
         },
       ],
     };
@@ -225,7 +263,6 @@ export default class Profile extends Component {
   }
 
   updateItem = () => {
-    console.log('dsbjkfjkds', this.state.itemData.id, this.state.itemData);
     database()
       .ref(`${this.state.userData.college}/Items/${this.state.itemData.id}`)
       .update({
@@ -316,7 +353,6 @@ export default class Profile extends Component {
                 .ref(`${college}/Items/${child.key}`)
                 .once('value')
                 .then((snap) => {
-                  console.log('snaaappp', snap.val());
                   ls.push(snap.val());
                 });
             }
@@ -345,6 +381,7 @@ export default class Profile extends Component {
   }
 
   editItemModal() {
+    console.log(String(this.state.itemData.category).toLowerCase());
     return (
       <SafeAreaView>
         <Modal
@@ -454,7 +491,7 @@ export default class Profile extends Component {
                   placeholderTextColor="rgba(0,0,0,0.7)"
                   autoCorrect={false}
                   onChangeText={async (title) => {
-                    await this.setState((prevState) => ({
+                    this.setState((prevState) => ({
                       itemData: {
                         ...prevState.itemData,
                         name: title,
@@ -473,7 +510,7 @@ export default class Profile extends Component {
                   multiline={true}
                   style={{height: 100}}
                   onChangeText={async (desr) => {
-                    await this.setState((prevState) => ({
+                    this.setState((prevState) => ({
                       itemData: {
                         ...prevState.itemData,
                         description: desr,
@@ -490,7 +527,7 @@ export default class Profile extends Component {
                   placeholderTextColor="rgba(0,0,0,0.7)"
                   autoCorrect={false}
                   onChangeText={async (brand) => {
-                    await this.setState((prevState) => ({
+                    this.setState((prevState) => ({
                       itemData: {
                         ...prevState.itemData,
                         brand: brand,
@@ -504,7 +541,9 @@ export default class Profile extends Component {
 
                 <DropDownPicker
                   items={this.state.categories}
-                  defaultValue={'other'}
+                  defaultValue={String(
+                    this.state.itemData.category,
+                  ).toLowerCase()}
                   searchable={true}
                   placeholder={'Category'}
                   labelStyle={{color: COLORS.black}}
@@ -515,7 +554,7 @@ export default class Profile extends Component {
                   }}
                   dropDownStyle={{backgroundColor: '#fafafa'}}
                   onChangeItem={async (itm) => {
-                    await this.setState((prevState) => ({
+                    this.setState((prevState) => ({
                       itemData: {
                         ...prevState.itemData,
                         category: itm.label,
@@ -578,8 +617,8 @@ export default class Profile extends Component {
                     <Switch
                       style={{alignSelf: 'flex-end'}}
                       onValueChange={async (value) => {
-                        await this.setState({inPersonEnabled: value});
-                        await this.setState((prevState) => ({
+                        this.setState({inPersonEnabled: value});
+                        this.setState((prevState) => ({
                           itemData: {
                             ...prevState.itemData,
                             payment_method1: value,
@@ -631,7 +670,7 @@ export default class Profile extends Component {
                   placeholderTextColor="rgba(0,0,0,0.7)"
                   autoCorrect={false}
                   onChangeText={async (price) => {
-                    await this.setState((prevState) => ({
+                    this.setState((prevState) => ({
                       itemData: {
                         ...prevState.itemData,
                         price: price,
@@ -991,7 +1030,6 @@ function noWishList() {
 }
 
 function ItemCell(data) {
-  console.log(data.img_url, data);
   return (
     <TouchableOpacity style={{height: WIDTH / 2.2}}>
       <FastImage

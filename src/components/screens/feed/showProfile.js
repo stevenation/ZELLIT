@@ -111,12 +111,10 @@ export default class ShowProfile extends Component {
   }
 
   async UNSAFE_componentWillMount() {
-    // console.log(this.props.route.params);
     var snapshot = await database()
       .ref(`Users/${this.state.userData.uid}`)
       .once('value');
     let data = snapshot.val();
-    // console.log(snapshot.val());
     this.Unsubscribe(this.state.userData.college);
 
     var url = await storage()

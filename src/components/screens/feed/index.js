@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {LogBox} from 'react-native';
+// import {LogBox} from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {styles} from './styles';
@@ -21,9 +21,9 @@ import storage from '@react-native-firebase/storage';
 import FastImage from 'react-native-fast-image';
 
 // LogBox.ignoreAllLogs();
-const wait = (timeout) => {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
-};
+// const wait = (timeout) => {
+//   return new Promise((resolve) => setTimeout(resolve, timeout));
+// };
 
 export const categories = [
   {
@@ -63,11 +63,9 @@ export const categories = [
   },
 ];
 export default class Feed extends React.Component {
-  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
-      refresh: false,
       userId: firebase.auth().currentUser.uid,
       userData: [],
       itemsData: [],
@@ -86,14 +84,14 @@ export default class Feed extends React.Component {
     };
     database()
       .ref('.info/connected')
-      .on('value', function (snapshot) {
+      .on('value', (snapshot) => {
         if (!snapshot.val()) {
           return;
         }
         userStatusDatabaseRef
           .onDisconnect()
           .set(isOfflineForDatabase)
-          .then(function () {
+          .then(() => {
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
@@ -104,59 +102,6 @@ export default class Feed extends React.Component {
       w.replace(/^\w/, (c) => c.toUpperCase()),
     );
   }
-
-  // onRefresh = () => {
-  //   this.setState({refresh: true});
-  //   // this.fetchData();
-  //   var userId = firebase.auth().currentUser.uid;
-  //   userId == null
-  //     ? console.log('userID is empty')
-  //     : database()
-  //         .ref(`Users/${userId}`)
-  //         .once('value')
-  //         .then(async (snapshot) => {
-  //           console.log(this.state.userID, snapshot.val());
-  //           this.setState({userData: snapshot.val()});
-  //           this.setState({title: this.capitalize(snapshot.val()['college'])});
-  //           await database()
-  //             .ref(`${snapshot.val().college}/Items`)
-  //             .once('value')
-  //             .then((snp) => {
-  //               if (snp) {
-  //                 database()
-  //                   .ref(`Users/${snp.val().uid}`)
-  //                   .once('value')
-  //                   .then((snap) => {
-  //                     console.log('pp', snap.val());
-  //                     storage()
-  //                       .ref(
-  //                         `/images/profile_pictures/${
-  //                           snap.val().profile_picture
-  //                         }`,
-  //                       )
-  //                       .getDownloadURL()
-  //                       .then(
-  //                         (url) => {
-  //                           FastImage.preload([{uri: url}]);
-  //                           var lst = this.state.itemsData;
-  //                           lst.push({
-  //                             ...snp.val(),
-  //                             key: snp.key,
-  //                             profile_picture_url: url,
-  //                           });
-  //                           this.setState({itemsData: lst});
-  //                         },
-  //                         (error) => {
-  //                           console.log(error);
-  //                         },
-  //                       );
-  //                   });
-  //               }
-  //             });
-  //         });
-
-  //   wait(2000).then(() => this.setState({refresh: false}));
-  // };
 
   async fetchData() {
     var userId = firebase.auth().currentUser.uid;
@@ -169,6 +114,7 @@ export default class Feed extends React.Component {
             console.log(snapshot.val());
             this.setState({userData: snapshot.val()});
             this.setState({title: this.capitalize(snapshot.val()['college'])});
+            console.log('hello');
             await database()
               .ref(`${snapshot.val().college}/Items`)
               .orderByValue()
@@ -193,7 +139,6 @@ export default class Feed extends React.Component {
                           .then(
                             (url) => {
                               FastImage.preload([{uri: url}]);
-
                               var lst = this.state.itemsData;
                               lst.push({
                                 ...child.val(),
@@ -214,11 +159,11 @@ export default class Feed extends React.Component {
   }
 
   UNSAFE_componentWillMount() {
-    this._isMounted = true;
-    if (this._isMounted) {
+    setTimeout(() => {
       this.fetchData();
       this.checkUserStatus();
-    }
+      console.log('done mounting');
+    }, 1);
   }
 
   componentWillUnmount() {
@@ -232,17 +177,6 @@ export default class Feed extends React.Component {
           <View style={{paddingVertical: 5}}>
             <Text style={styles.collegeName}>{this.state.title}</Text>
           </View>
-
-          {/*<View>*/}
-          {/*    <SearchBar*/}
-          {/*        searchIcon={{size: 24}}*/}
-          {/*        containerStyle={{backgroundColor: COLORS.white, borderTopWidth: 0}}*/}
-          {/*        round={true}*/}
-          {/*        lightTheme={true}*/}
-          {/*        placeholder={"search item"}*/}
-          {/*    />*/}
-          {/*</View>*/}
-
           <FlatList
             horizontal={true}
             data={categories}
@@ -267,14 +201,7 @@ export default class Feed extends React.Component {
             )}
           />
 
-          <ScrollView
-            style={{maxHeight: 700}}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refresh}
-                onRefresh={this.onRefresh}
-              />
-            }>
+          <ScrollView style={{maxHeight: 700}}>
             <View>
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Electronics</Text>

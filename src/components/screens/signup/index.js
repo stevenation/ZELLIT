@@ -133,7 +133,7 @@ export default function SignUp() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
-              register(name, email, password, college['value']);
+              register(name, email, password, college.value);
             }}>
             <Shadow style={styles.buttons}>
               <Text style={styles.buttonText}>SIGNUP</Text>

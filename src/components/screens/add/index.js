@@ -46,6 +46,7 @@ export default class CacheImage extends React.Component {
         payment_method2: '',
         img_url: '',
         uid: '',
+        timestamp: ''
       },
 
       upLoadUri: '',
@@ -74,6 +75,14 @@ export default class CacheImage extends React.Component {
         {
           label: 'Other',
           value: 'other',
+        },
+        {
+          label: 'Textbooks',
+          value: 'textbooks',
+        },
+        {
+          label: 'Stationery',
+          value: 'stationery',
         },
       ],
 
@@ -140,9 +149,9 @@ export default class CacheImage extends React.Component {
       .ref(
         `${this.state.userData['college']}/Items/${
           this.state.userData['uid']
-        }${date.toString()}`,
+        }${date.getTime()}`,
       )
-      .set(this.state.itemsData);
+      .set({...this.state.itemsData, timestamp: date.getTime()});
   }
 
   async uploadImages(upLoadUri) {

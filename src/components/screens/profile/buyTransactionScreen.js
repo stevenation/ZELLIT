@@ -10,6 +10,7 @@ import * as FileSystem from 'expo-file-system';
 import {Dimensions} from 'react-native';
 import {firebase} from '@react-native-firebase/auth';
 import FastImage from 'react-native-fast-image';
+import {Rating} from 'react-native-ratings';
 
 export default class BuyTransactionScreen extends Component {
   constructor(props) {
@@ -19,28 +20,73 @@ export default class BuyTransactionScreen extends Component {
       showModal: false,
       id: props.route.params.data.transID,
       sellerInfo: null,
+      paid: false,
+      rated: false,
+      s_rated: false,
+      complete: false,
+      showRating: false,
     };
   }
 
   UNSAFE_componentWillMount() {
-    this._isMounted = true;
-    if (this._isMounted) {
-      this.GetSellerInfo();
-    }
-  }
+    this.GetSellerInfo();
+    this.Unsubscribe();
 
-  UNSAFE_componentWillUpdate() {
     database()
       .ref(`transactions/${this.state.data.transID}`)
-      .on('child_changed', (snapshot) => {
-        if (snapshot.val()) {
-          this.setState({data: {...this.state.data, paid: true}});
+      .on('value', (snp) => {
+        var data = snp.val();
+
+        if (data.paid && data.complete && !data.b_rated && data.s_rated) {
+          this.setState({showRating: true});
         }
       });
   }
-  componentWillUnmount() {
-    this._isMounted = false;
+  updateRating() {
+    let total = this.state.sellerInfo.rating_total + this.state.rating;
+    let count = this.state.sellerInfo.rating_count + 1;
+    database().ref(`/Users/${this.state.data.sellerId}`).update({
+      rating_total: total,
+      rating_count: count,
+    });
+
+    database()
+      .ref(`transactions/${this.state.data.transID}`)
+      .update({b_rated: true});
   }
+
+  Unsubscribe() {
+    database()
+      .ref(`transactions/${this.state.data.transID}`)
+      .on('child_changed', (snapshot) => {
+        if (snapshot.key === 'paid') {
+          this.setState({paid: snapshot.val()});
+        }
+        if (snapshot.key === 'complete') {
+          this.setState({complete: snapshot.val()});
+        }
+        if (snapshot.key === 'b_rated') {
+          this.setState({rated: snapshot.val()});
+        }
+        if (snapshot.key === 's_rated') {
+          this.setState({s_rated: snapshot.val()});
+        }
+      });
+  }
+
+  // UNSAFE_componentWillUpdate() {
+  //   // this.Unsubscribe();
+
+  //   if (
+  //     this.state.paid &&
+  //     this.state.complete &&
+  //     this.state.s_rated &&
+  //     !this.state.rated
+  //   ) {
+  //     this.setState({showRating: true});
+  //   }
+  // }
+  componentWillUnmount() {}
 
   ShowButton() {
     return (
@@ -119,6 +165,54 @@ export default class BuyTransactionScreen extends Component {
   ShowComplete() {
     return <View style={styles.complete}>Complete</View>;
   }
+  ratingCompleted(rating) {
+    this.setState({rating: rating});
+  }
+
+  showRating() {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.showRating}
+        onRequestClose={() => {
+          console.alert('Modal has been closed.');
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Rate your transaction with the seller
+            </Text>
+
+            <Rating
+              fractions={1}
+              showRating={true}
+              startingValue={this.state.rating}
+              onFinishRating={(rating) => this.ratingCompleted(rating)}
+            />
+            <View style={{flexDirection: 'row'}}>
+              <TouchableHighlight
+                style={{...styles.openButton, backgroundColor: '#2196F3'}}
+                onPress={() => {
+                  this.updateRating();
+                  this.setState({showRating: false});
+                }}>
+                <Text style={styles.textStyle}>OK</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                style={{...styles.openButton, backgroundColor: '#2196F3'}}
+                onPress={() => {
+                  this.setState({rating: 0});
+                  this.setState({showRating: false});
+                }}>
+                <Text style={styles.textStyle}>Cancel</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
   GetSellerInfo() {
     database()
       .ref(`Users/${this.state.data.sellerId}`)
@@ -184,7 +278,6 @@ export default class BuyTransactionScreen extends Component {
             onPress={async () => {
               const key1 = firebase.auth().currentUser.uid;
               const key2 = this.state.sellerInfo.uid;
-              // console.log(sellerInfo);
               var id;
 
               const key1_key2 = await database()
@@ -223,8 +316,8 @@ export default class BuyTransactionScreen extends Component {
         </View>
 
         {!this.state.data.paid && this.ShowButton()}
-        {/* {this.state.data.paid && this.ShowPaid()} */}
         {this.ShowModal()}
+        {this.showRating()}
       </SafeAreaView>
     );
   }

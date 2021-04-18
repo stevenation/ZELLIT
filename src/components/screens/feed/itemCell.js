@@ -16,6 +16,7 @@ export default function ItemCell({itemData, navigation}) {
   const WIDTH = Dimensions.get('screen').width;
 
   const updateWishList = (state) => {
+    setLike(state);
     if (state) {
       database().ref(`wishlist/${itemData.key}/${userId}`).set({like: true});
     } else {
@@ -37,9 +38,7 @@ export default function ItemCell({itemData, navigation}) {
             setLikeColor(COLORS.gray);
           }
         });
-
     unsubscribe();
-
     return () => database().ref(`wishlist/${itemData.key}/${userId}`).off();
   }, [itemData.key, like, userId]);
 

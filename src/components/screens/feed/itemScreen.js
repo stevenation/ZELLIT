@@ -14,7 +14,7 @@ import {
 import {COLORS} from '../../../constants';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {styles} from './styles';
-import {Button} from 'react-native-elements';
+import {AirbnbRating, Button} from 'react-native-elements';
 import {SwiperFlatList} from 'react-native-swiper-flatlist';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
@@ -92,10 +92,15 @@ export default function ItemScreen(item) {
       database()
         .ref(`wishlist/${itemData.key}/${userId}`)
         .on('value', (snp) => {
-          setLike(snp.val().like);
-          snp.val().like
-            ? setLikeColor(COLORS.orange)
-            : setLikeColor(COLORS.gray);
+          if (snp.val()) {
+            setLike(snp.val().like);
+            snp.val().like
+              ? setLikeColor(COLORS.orange)
+              : setLikeColor(COLORS.gray);
+          } else {
+            setLike(false);
+            setLikeColor(COLORS.gray);
+          }
         });
 
     const unsubscribe = () =>
@@ -357,14 +362,32 @@ export default function ItemScreen(item) {
                 <Text style={styles.userName}>{sellerInfo.name}</Text>
               </TouchableOpacity>
 
-              <View style={{flexDirection: 'row', paddingVertical: 2}}>
+              {/* <View style={{flexDirection: 'row', paddingVertical: 2}}>
                 <AntDesign name={'star'} color={COLORS.orange} />
                 <AntDesign name={'star'} color={COLORS.orange} />
                 <AntDesign name={'star'} color={COLORS.orange} />
                 <AntDesign name={'star'} color={COLORS.orange} />
                 <AntDesign name={'star'} color={COLORS.black} />
                 <Text> 4/5</Text>
-              </View>
+              </View> */}
+
+              <AirbnbRating
+                starContainerStyle={{
+                  padding: 0,
+                  left: 0,
+                  margin: 0,
+                  alignSelf: 'flex-start',
+                }}
+                type="star"
+                showRating={false}
+                fraction={2}
+                defaultRating={
+                  sellerInfo.rating_total / sellerInfo.rating_count
+                }
+                isDisabled={true}
+                size={15}
+              />
+
               <View style={{flexDirection: 'row'}}>
                 <View style={{paddingRight: 5}}>
                   <Button

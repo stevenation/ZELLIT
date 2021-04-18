@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import ConversationScreen from '../components/screens/chat/conversationScreen';
 import Chat from '../components/screens/chat';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {COLORS} from '../constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -42,12 +42,12 @@ export function ChatScreen() {
       );
     }
   }
-  // useEffect(()=>{
 
   function onlineStatus(userId) {
     database()
       .ref(`status/${userId}`)
       .on('value', (snapshot) => {
+        console.log(snapshot);
         if (snapshot.val().state === 'online') {
           setState('online');
         } else {

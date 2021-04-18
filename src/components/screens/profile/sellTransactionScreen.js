@@ -20,20 +20,38 @@ export default class SellTransactionScreen extends Component {
       sellerInfo: null,
       showRating: false,
       rating: 0,
+      paid: false,
+      complete: false,
+      rated: false,
     };
   }
   UNSAFE_componentWillMount() {
     this.GetBuyerInfo();
+    database()
+      .ref(`transactions/${this.state.data.transID}`)
+      .on('value', (snapshot) => {
+        var data = snapshot.val();
+        this.setState({
+          paid: data.paid,
+          complete: data.complete,
+          rated: data.rated,
+        });
+      });
+
+    this.Unsubscribe();
   }
   Unsubscribe() {
     database()
       .ref(`transactions/${this.state.data.transID}`)
       .on('child_changed', (snapshot) => {
-        if (snapshot) {
-          this._isMounted = true;
-          if (this._isMounted) {
-            this.setState({data: {...this.state.data, complete: true}});
-          }
+        if (snapshot.key === 'paid') {
+          this.setState({paid: snapshot.val()});
+        }
+        if (snapshot.key === 'complete') {
+          this.setState({complete: snapshot.val()});
+        }
+        if (snapshot.key === 's_rated') {
+          this.setState({rated: snapshot.val()});
         }
       });
   }
@@ -53,10 +71,41 @@ export default class SellTransactionScreen extends Component {
       .off('value', this.Unsubscribe);
   }
 
+  status = () => {
+    if (this.state.paid && this.state.complete) {
+      return 'Sold';
+    } else if (this.state.paid && !this.state.complete) {
+      return 'Confirm Payment';
+    } else if (!this.state.paid && !this.state.complete) {
+      console.log(!this.state.paid, !this.state.complete);
+      return 'Waiting for payment';
+    }
+  };
   ConfirmPayment() {
-    database().ref(`transactions/${this.state.id}`).update({
+    var s_trades = this.state.sellerInfo.trades + 1;
+    console.log('strades', s_trades, this.state.sellerInfo);
+    database()
+      .ref(`Users/${this.state.data.sellerId}`)
+      .once('value')
+      .then((snp) => {
+        var trades = snp.val().trades + 1;
+        console.log('buyer trades', trades, this.state.data.sellerId);
+        database().ref(`Users/${this.state.data.sellerId}`).update({
+          trades: trades,
+        });
+      });
+    // console.log('trades', data);
+
+    database().ref(`transactions/${this.state.data.transID}`).update({
       complete: true,
+      s_rated: true,
     });
+    database().ref(`/Users/${this.state.data.buyerId}`).update({
+      trades: s_trades,
+    });
+    if (this.state.paid && !this.state.rated) {
+      this.setState({showRating: true});
+    }
   }
   ShowButton() {
     return (
@@ -148,13 +197,6 @@ export default class SellTransactionScreen extends Component {
                 onPress={() => {
                   this.ConfirmPayment();
                   this.setState({showModal: false});
-                  if (
-                    this.state.data.paid &&
-                    this.state.data.complete &&
-                    !this.state.data.rated
-                  ) {
-                    this.setState({showRating: true});
-                  }
                 }}>
                 <Text style={styles.textStyle}>OK</Text>
               </TouchableHighlight>
@@ -171,9 +213,7 @@ export default class SellTransactionScreen extends Component {
       </Modal>
     );
   }
-  ShowComplete() {
-    return <View style={styles.complete}>Complete</View>;
-  }
+
   GetBuyerInfo() {
     database()
       .ref(`Users/${this.state.data.buyerId}`)
@@ -197,18 +237,18 @@ export default class SellTransactionScreen extends Component {
             alignItems: 'center',
             height: 30,
             width: Dimensions.get('screen').width,
-            backgroundColor: this.state.data.complete
-              ? COLORS.green
-              : COLORS.blue,
+            backgroundColor: this.state.complete ? COLORS.green : COLORS.blue,
           }}>
           <Text style={{fontWeight: '700', fontSize: 20, color: COLORS.white}}>
-            {this.state.data.paid && !this.state.data.complete
-              ? 'Confirm Payment'
-              : this.state.data.paid && this.state.data.complete
-              ? 'Sold'
-              : this.state.data.paid
-              ? 'Paid'
-              : 'Waiting For Payment'}
+            {this.status()}
+            {/* {
+              // console.log(this.state.data.paid, !this.state.data.complete)
+              this.state.paid && !this.state.complete
+                ? 'Confirm Payment'
+                : this.state.paid && this.state.complete
+                ? 'Sold'
+                : 'Waiting For Payment'
+            } */}
           </Text>
         </View>
         <View
@@ -275,7 +315,8 @@ export default class SellTransactionScreen extends Component {
             }}
           />
         </View>
-        {this.state.data.paid && !this.state.data.complete && this.ShowButton()}
+
+        {this.state.paid && !this.state.complete && this.ShowButton()}
         {this.ShowModal()}
 
         {this.showRating()}

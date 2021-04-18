@@ -9,10 +9,8 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {COLORS} from '../../../constants';
 
 export default function ConversationScreen(props, {navigation}) {
-  LogBox.ignoreLogs([
-    'Animated: `useNativeDriver` was not specified. This is a required option and must be explicitly set to `true` or `false`',
-  ]);
-  LogBox.ignoreLogs(['Animated.event now requires a second argument']);
+
+  LogBox.ignoreAllLogs();
   const users = props.route.params.user;
   const userId = firebase.auth().currentUser.uid;
   const _id = userId;

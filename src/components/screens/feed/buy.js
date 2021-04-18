@@ -46,6 +46,7 @@ export default function Buy(item) {
         buyerName: itemData.buyerName,
         complete: false,
         paid: false,
+        rated: false,
       });
 
       database()
