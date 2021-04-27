@@ -7,6 +7,7 @@ A Marketplace for College Students To Buy and Sell Items<br/>
 1. Nodejs
 2. Xcode
 3. npm
+4. React Native
 
 ## Installation(iOS)
 1. Clone this repository
