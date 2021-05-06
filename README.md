@@ -10,7 +10,7 @@ A Marketplace for College Students To Buy and Sell Items<br/>
 4. React Native
 
 # Installation
-## (iOS)
+## iOS
 1. Clone this repository
 2. In the parent directory run `$ npm install`
 3. Run `$ cd ios; pod install; cd ..`
