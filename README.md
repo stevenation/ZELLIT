@@ -13,5 +13,8 @@ A Marketplace for College Students To Buy and Sell Items<br/>
 1. Clone this repository
 2. In the parent directory run `$ npm install`
 3. Run `$ cd ios; pod install; cd ..`
-4. The start the app on iOs:  `react-native run-ios`
+4. To start the app on iOs:  `react-native run-ios`
   
+# Android
+1. In the parent directory run `$ npm install`
+2. To start the app on android:  `react-native run-ios`
